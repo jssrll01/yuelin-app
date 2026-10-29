@@ -69,3 +69,10 @@ h1{font-size:28px;font-weight:800;letter-spacing:-.01em}h2{font-size:20px;font-w
 @keyframes spin{to{transform:rotate(360deg)}}.spin{animation:spin .8s linear infinite}
 @keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}.pop{animation:pop .35s ease-out}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important}}
+.serif{font-family:"Playfair Display",Georgia,"Times New Roman",serif;letter-spacing:-.01em}
+.pgrid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.thumb{aspect-ratio:4/3;border-radius:16px;box-shadow:var(--press);background:linear-gradient(145deg,#fff9e6,#eceff4);display:grid;place-items:center;overflow:hidden;color:var(--gold)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.sbox{text-align:center;padding:32px 20px}
+.foot{margin-top:40px;padding-top:24px;border-top:1px solid rgba(163,172,192,.35)}
+.fnav{display:flex;flex-wrap:wrap;gap:10px 20px}.fnav a{font-size:14px;font-weight:600;color:var(--gold3)}

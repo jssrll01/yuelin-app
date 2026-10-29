@@ -12,6 +12,13 @@ import History from './pages/History.jsx';
 import RedeemCode from './pages/RedeemCode.jsx';
 import Exchange from './pages/Exchange.jsx';
 import Games from './pages/Games.jsx';
+import HomeDeal from './pages/deal/HomeDeal.jsx';
+import AboutDeal from './pages/deal/AboutDeal.jsx';
+import HowItWorksDeal from './pages/deal/HowItWorksDeal.jsx';
+import VipDeal from './pages/deal/VipDeal.jsx';
+import ReferDeal from './pages/deal/ReferDeal.jsx';
+import OffersDeal from './pages/deal/OffersDeal.jsx';
+import HelpCenterDeal from './pages/deal/HelpCenterDeal.jsx';
 
 const guard = (el) => <RequireAuth>{el}</RequireAuth>;
 
@@ -30,6 +37,13 @@ export default function App() {
         <Route path="/redeem" element={guard(<RedeemCode />)} />
         <Route path="/exchange" element={guard(<Exchange />)} />
         <Route path="/games" element={guard(<Games />)} />
+        <Route path="/home-deal" element={<HomeDeal />} />
+        <Route path="/about-deal" element={<AboutDeal />} />
+        <Route path="/how-it-works-deal" element={<HowItWorksDeal />} />
+        <Route path="/vip-membership-deal" element={<VipDeal />} />
+        <Route path="/refer-a-friend-deal" element={<ReferDeal />} />
+        <Route path="/offers-deal" element={<OffersDeal />} />
+        <Route path="/help-center-deal" element={<HelpCenterDeal />} />
         <Route path="*" element={<Home />} />
       </Route>
     </Routes>
