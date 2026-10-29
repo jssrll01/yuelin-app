@@ -30,10 +30,10 @@ export default function HelpCenterDeal() {
         </div>
       </div>
 
-      <div className="row" style={{ flexWrap: 'wrap', gap: 8 }} role="group" aria-label="Categories">
-        <button type="button" aria-pressed={cat < 0} className={'btn sm' + (cat < 0 ? ' gold' : '')} onClick={() => setCat(-1)}>All</button>
+      <div className="row" style={{ flexWrap: 'nowrap', overflowX: 'auto', gap: 8, paddingBottom: 8, WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }} role="group" aria-label="Categories">
+        <button type="button" aria-pressed={cat < 0} style={{ flexShrink: 0 }} className={'btn sm' + (cat < 0 ? ' gold' : '')} onClick={() => setCat(-1)}>All</button>
         {HELP_CATEGORIES.map((c, i) => (
-          <button key={c} type="button" aria-pressed={cat === i} className={'btn sm' + (cat === i ? ' gold' : '')} onClick={() => setCat(i)}>{c}</button>
+          <button key={c} type="button" aria-pressed={cat === i} style={{ flexShrink: 0 }} className={'btn sm' + (cat === i ? ' gold' : '')} onClick={() => setCat(i)}>{c}</button>
         ))}
       </div>
 

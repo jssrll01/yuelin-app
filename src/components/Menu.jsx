@@ -3,11 +3,15 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { BookOpen, Bell, Crown, Dices, Gift, History, Home, Info, LifeBuoy, LogIn, Sparkles, Tag, Ticket, User, UserPlus, Users, X } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 
-const discover = [['/', 'Home', Home], ['/about', 'About YUÉLÍN', Info], ['/guide', 'How it works & guide', BookOpen]];
-const explore = [
-  ['/home-deal', 'Treats & home', Sparkles], ['/about-deal', 'About the brand', Info], ['/how-it-works-deal', 'How It Works', BookOpen],
-  ['/vip-membership-deal', 'VIP Membership', Crown], ['/refer-a-friend-deal', 'Refer a Friend', Users],
-  ['/offers-deal', 'Offers', Tag], ['/help-center-deal', 'Help Center', LifeBuoy],
+const discover = [
+  ['/', 'Home', Home],
+  ['/home-deal', 'Treats', Sparkles],
+  ['/about-deal', 'About the brand', Info],
+  ['/how-it-works-deal', 'How It Works', BookOpen],
+  ['/vip-membership-deal', 'VIP Membership', Crown],
+  ['/refer-a-friend-deal', 'Refer a Friend', Users],
+  ['/offers-deal', 'Offers', Tag],
+  ['/help-center-deal', 'Help Center', LifeBuoy]
 ];
 const member = [['/redeem', 'Redeem a code', Ticket], ['/exchange', 'Reward exchange', Gift], ['/games', 'Play with points', Dices], ['/history', 'Points history', History], ['/notifications', 'Notifications', Bell], ['/profile', 'My profile', User]];
 const guest = [['/login', 'Sign in', LogIn], ['/register', 'Create account', UserPlus]];
@@ -41,7 +45,6 @@ export default function Menu({ open, onClose }) {
           <button className="icon-btn" onClick={onClose} aria-label="Close menu"><X size={18} /></button>
         </div>
         {group('DISCOVER', discover)}
-        {group('EXPLORE YUÉLÍN', explore)}
         {session ? group('MY ACCOUNT', member) : group('JOIN', guest)}
       </aside>
     </>

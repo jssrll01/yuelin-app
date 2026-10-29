@@ -89,15 +89,4 @@ export function Steps({ items }) {
   );
 }
 
-export function DealFooter() {
-  const contact = [SITE.contactEmail, SITE.contactPhone].filter(Boolean).join(' · ');
-  return (
-    <footer className="foot stack" style={{ gap: 14 }}>
-      <p className="gold-text serif" style={{ fontSize: 22, fontWeight: 800 }}>YUÉLÍN</p>
-      <p className="dim small">Sweet Moments. Last Forever.</p>
-      <nav aria-label="Footer" className="fnav">{DEAL_LINKS.map(([to, l]) => <Link key={to} to={to}>{l}</Link>)}</nav>
-      {contact && <p className="dim small">{contact}</p>}
-      <p className="dim small">© {new Date().getFullYear()} YUÉLÍN</p>
-    </footer>
-  );
-}
+export function DealFooter() { return null; }

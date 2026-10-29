@@ -34,7 +34,7 @@ export default function Guide() {
           <details key={t} className="faq"><summary>{t}</summary><div className="body">{ps.map((p) => <p key={p} className="dim">{p}</p>)}</div></details>
         ))}
       </div>
-      <Link to="/register" className="btn gold block">Create my account</Link>
+      
     </div>
   );
 }
