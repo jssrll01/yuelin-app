@@ -4,8 +4,8 @@ import { BookOpen, Bell, Crown, Dices, Gift, History, Home, Info, LifeBuoy, LogI
 import { useAuth } from '../auth.jsx';
 
 const discover = [
-  ['/', 'Home', Home],
-  ['/home-deal', 'Treats', Sparkles],
+  ['/home-deal', 'Home', Home],
+  ['/home-deal#treats', 'Treats', Sparkles],
   ['/about-deal', 'About the brand', Info],
   ['/how-it-works-deal', 'How It Works', BookOpen],
   ['/vip-membership-deal', 'VIP Membership', Crown],
@@ -13,13 +13,27 @@ const discover = [
   ['/offers-deal', 'Offers', Tag],
   ['/help-center-deal', 'Help Center', LifeBuoy]
 ];
-const member = [['/redeem', 'Redeem a code', Ticket], ['/exchange', 'Reward exchange', Gift], ['/games', 'Play with points', Dices], ['/history', 'Points history', History], ['/notifications', 'Notifications', Bell], ['/profile', 'My profile', User]];
-const guest = [['/login', 'Sign in', LogIn], ['/register', 'Create account', UserPlus]];
+
+const member = [
+  ['/redeem', 'Redeem a code', Ticket], 
+  ['/exchange', 'Reward exchange', Gift], 
+  ['/games', 'Play with points', Dices], 
+  ['/history', 'Points history', History], 
+  ['/notifications', 'Notifications', Bell], 
+  ['/profile', 'My profile', User]
+];
+
+const guest = [
+  ['/login', 'Sign in', LogIn], 
+  ['/register', 'Create account', UserPlus]
+];
 
 export default function Menu({ open, onClose }) {
   const { session } = useAuth();
   const loc = useLocation();
+  
   useEffect(() => { onClose(); }, [loc.pathname, onClose]);
+  
   useEffect(() => {
     if (!open) return undefined;
     const k = (e) => { if (e.key === 'Escape') onClose(); };
@@ -27,15 +41,20 @@ export default function Menu({ open, onClose }) {
     document.body.style.overflow = 'hidden';
     return () => { window.removeEventListener('keydown', k); document.body.style.overflow = ''; };
   }, [open, onClose]);
+  
   if (!open) return null;
+  
   const group = (title, items) => (
     <>
       <p className="mh">{title}</p>
       {items.map(([to, label, Icon]) => (
-        <NavLink key={to} to={to} end className={({ isActive }) => 'mi' + (isActive ? ' active' : '')}><Icon size={20} />{label}</NavLink>
+        <NavLink key={label} to={to} end className={({ isActive }) => 'mi' + (isActive ? ' active' : '')}>
+          <Icon size={20} />{label}
+        </NavLink>
       ))}
     </>
   );
+
   return (
     <>
       <div className="drawer-bg" onClick={onClose} aria-hidden="true" />
