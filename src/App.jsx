@@ -2,6 +2,8 @@ import { Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
 import Home from './pages/Home.jsx';
+import About from './pages/About.jsx';
+import Guide from './pages/Guide.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Notifications from './pages/Notifications.jsx';
@@ -18,6 +20,8 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/guide" element={<Guide />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/notifications" element={guard(<Notifications />)} />
