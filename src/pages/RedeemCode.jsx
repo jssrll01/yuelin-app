@@ -18,7 +18,7 @@ export default function RedeemCode() {
     setBusy(true);
     const { data, error } = await supabase.rpc('redeem_code', { p_code: code });
     setBusy(false);
-    if (error) return setErr('Something went wrong. Please try again.');
+    if (error) return setErr('Something went wrong: ' + (error.code || '') + ' ' + (error.message || ''));
     if (!data.ok) return setErr(data.error);
     setOk('Success. ' + pts(data.points) + ' points (' + peso(data.points) + ') were added to your balance.');
     setCode(''); refresh();
