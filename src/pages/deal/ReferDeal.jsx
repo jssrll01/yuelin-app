@@ -142,10 +142,7 @@ export default function ReferDeal() {
         <div className="card"><ul className="dim" style={{ paddingLeft: 18, lineHeight: 1.8 }}>{RULES.map((r) => <li key={r}>{r}</li>)}</ul></div>
       </section>
 
-      <div className="row" style={{ flexWrap: 'wrap' }}>
-        <Link to="/how-it-works-deal" className="btn gold">How it works</Link>
-        <Link to="/help-center-deal" className="btn">Visit the Help Center</Link>
-      </div>
+      
       <DealFooter />
     </div>
   );

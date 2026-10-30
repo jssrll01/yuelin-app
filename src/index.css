@@ -76,3 +76,14 @@ h1{font-size:28px;font-weight:800;letter-spacing:-.01em}h2{font-size:20px;font-w
 .sbox{text-align:center;padding:32px 20px}
 .foot{margin-top:40px;padding-top:24px;border-top:1px solid rgba(163,172,192,.35)}
 .fnav{display:flex;flex-wrap:wrap;gap:10px 20px}.fnav a{font-size:14px;font-weight:600;color:var(--gold3)}
+
+/* Prevent text highlighting and copying */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Ensure inputs and textareas remain editable */
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
+}

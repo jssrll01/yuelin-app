@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Coins, Gem, Gift, History, Ticket } from 'lucide-react';
-import { supabase } from '../supabase';
+import { ArrowRight, Coins } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 import { peso, pts } from '../format.js';
 import { BRAND, CAMPAIGNS } from '../brand.js';
@@ -10,13 +8,6 @@ const join = [['1', 'Create your account', 'Sign up with your email and a few de
 
 export default function Home() {
   const { session, profile } = useAuth();
-  const [rewards, setRewards] = useState([]);
-  const [total, setTotal] = useState(null);
-  
-  useEffect(() => {
-    supabase.from('rewards').select('*', { count: 'exact' }).eq('is_active', true).order('cost_points').limit(3)
-      .then(({ data, count }) => { setRewards(data || []); setTotal(count); });
-  }, []);
 
   return (
     <div className="stack" style={{ gap: 28 }}>
@@ -24,11 +15,6 @@ export default function Home() {
         <section className="card wallet stack">
           <div className="row between"><p className="eyebrow">WELCOME BACK</p><span className="badge">Member</span></div>
           <div><p className="big gold-text">{pts(profile?.points)}</p><p className="dim">points, worth {peso(profile?.points)}</p></div>
-          <div className="row" style={{ flexWrap: 'wrap' }}>
-            <Link to="/redeem" className="btn gold sm"><Ticket size={16} />Redeem code</Link>
-            <Link to="/exchange" className="btn sm"><Gift size={16} />Exchange</Link>
-            <Link to="/history" className="btn sm"><History size={16} />History</Link>
-          </div>
         </section>
       ) : (
         <section className="card banner">
@@ -41,12 +27,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      <section className="grid3">
-        <div className="card center"><p className="gold-text" style={{ fontSize: 26, fontWeight: 800 }}>100 pts = ₱1</p><p className="dim small">A fixed, transparent rate</p></div>
-        <div className="card center"><p className="gold-text" style={{ fontSize: 26, fontWeight: 800 }}>{total === null ? '…' : total}</p><p className="dim small">Rewards in the collection</p></div>
-        <div className="card center"><p className="gold-text" style={{ fontSize: 26, fontWeight: 800 }}>100%</p><p className="dim small">Of your points on record</p></div>
-      </section>
 
       <section className="stack">
         <h2>What's on at {BRAND.name}</h2>
@@ -68,21 +48,6 @@ export default function Home() {
         ))}
         {!session && <Link to="/register" className="btn gold block">Create my account</Link>}
       </section>
-
-      {rewards.length > 0 && (
-        <section className="stack">
-          <div className="row between"><h2>From the collection</h2><Link to="/exchange" className="badge">View all</Link></div>
-          <div className="grid3">
-            {rewards.map((r) => (
-              <div key={r.id} className="card stack" style={{ gap: 8 }}>
-                <span className="ico"><Gem size={22} /></span><h3>{r.name}</h3>
-                <p className="gold-text" style={{ fontWeight: 800 }}>{pts(r.cost_points)} pts</p>
-                <p className="dim small">{peso(r.cost_points)} value</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

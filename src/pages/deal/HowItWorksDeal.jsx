@@ -40,10 +40,7 @@ export default function HowItWorksDeal() {
         <p className="dim">Referral points are based on the points actually awarded for a successful, eligible package-code redemption. Opening a link or creating an account does not earn them. The referring customer receives 20% of the friend's base points, rounded down to a whole point. The friend's own points are not reduced.</p>
       </section>
 
-      <div className="row" style={{ flexWrap: 'wrap' }}>
-        <Link to="/redeem" className="btn gold">Claim points</Link>
-        <Link to="/help-center-deal" className="btn">Visit the Help Center</Link>
-      </div>
+      
       <DealFooter />
     </div>
   );

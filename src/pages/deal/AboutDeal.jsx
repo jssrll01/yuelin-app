@@ -45,10 +45,7 @@ export default function AboutDeal() {
         <p className="dim">Our treats come with a little extra. Each package carries a permanent QR code that leads to the claim page, and a unique package code that earns loyalty points once it is validated. Points can be redeemed for rewards, shared through referrals, and boosted with the optional VIP Membership.</p>
       </section>
 
-      <div className="row" style={{ flexWrap: 'wrap' }}>
-        <Link to="/home-deal" className="btn gold">Discover YUÉLÍN</Link>
-        <Link to="/how-it-works-deal" className="btn">Explore How It Works</Link>
-      </div>
+      
       <DealFooter />
     </div>
   );

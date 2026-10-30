@@ -174,8 +174,7 @@ export default function VipDeal() {
         <div className="grid2">
           {BENEFITS.map((b) => (
             <div key={b.title} className="card stack" style={{ gap: 10 }}>
-              <div className="row between"><span className="ico"><b.icon size={22} aria-hidden="true" /></span>
-                {b.ent ? <EntBadge list={ents} kind={b.ent} active={active} /> : <span className="badge">{b.badge}</span>}</div>
+              <div className="row"><span className="ico"><b.icon size={22} aria-hidden="true" /></span></div>
               <h3>{b.title}</h3>
               <p className="dim">{b.text}</p>
             </div>

@@ -25,10 +25,7 @@ export default function OffersDeal() {
         {(rows) => <div className="pgrid">{rows.map((o) => <OfferCard key={o.id} o={o} />)}</div>}
       </Async>
 
-      <div className="row" style={{ flexWrap: 'wrap' }}>
-        <Link to="/home-deal#treats" className="btn gold">Explore our treats</Link>
-        <Link to="/help-center-deal" className="btn">Questions about offers</Link>
-      </div>
+      
       <DealFooter />
     </div>
   );
