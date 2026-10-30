@@ -155,7 +155,6 @@ export default function VipDeal() {
         <div className="row"><span className="ico"><Icon size={22} aria-hidden="true" /></span><div><p className="eyebrow">YOUR MEMBERSHIP</p><h2 className="serif">{title}</h2></div></div>
         <p className="dim">{text}</p>
         <Msg kind="good">{done ? 'Receipt submitted. It is now pending verification.' : ''}</Msg>
-        <button type="button" className="btn sm" style={{ alignSelf: 'flex-start' }} onClick={vip.reload} disabled={vip.loading}>{vip.loading ? 'Refreshing…' : 'Refresh status'}</button>
       </div>
     );
   }
