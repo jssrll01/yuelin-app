@@ -21,7 +21,7 @@ export function StateBox({ kind, title, text, onRetry }) {
     loading: [Loader2, 'Loading…', ''],
     empty: [Inbox, 'Nothing here yet', ''],
     error: [AlertTriangle, 'We could not load this', 'Check your connection and try again.'],
-    missing: [Settings, 'Not set up yet', 'This section is waiting for backend setup. Please check back soon.'],
+    missing: [Settings, 'Not set up yet', ''],
   }[kind];
   const Icon = base[0];
   return (
