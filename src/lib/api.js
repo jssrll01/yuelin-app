@@ -38,6 +38,6 @@ export async function getVip() {
   ]);
   const missing = m.missing || a.missing || e.missing;
   const error = m.error || a.error || e.error;
-  return { data: { membership: m.data, application: a.data && a.data[0] ? a.data[0] : null, entitlements: e.data || [] }, missing, error: missing ? null : error };
+  return { data: { membership: m.data, application: a.data && a.data[0] ? a.data[0] : null, entitlements: e.data || [] }, missing, error };
 }
 export const submitVipApplication = (v) => run(supabase.rpc('submit_vip_application', { p_url: v.url, p_public_id: v.publicId, p_reference: v.reference || '', p_note: v.note || '' }));

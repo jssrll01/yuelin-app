@@ -145,7 +145,7 @@ export default function VipDeal() {
         </div>
       </div>
     );
-  } else if (vip.missing) status = <StateBox kind="missing" />;
+  } else if (vip.missing) status = <StateBox kind="missing" text={vip.error ? String(vip.error.code || "") + " " + String(vip.error.message || "") : ""} />;
   else if (vip.error) status = <StateBox kind="error" onRetry={vip.reload} />;
   else if (!v) status = <StateBox kind="loading" />;
   else {
