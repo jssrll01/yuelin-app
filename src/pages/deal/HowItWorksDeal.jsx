@@ -4,7 +4,7 @@ import usePage from '../../lib/usePage.js';
 import { DealFooter, Steps } from '../../components/deal/Parts.jsx';
 
 const steps = [
-  { icon: Search, title: 'Discover', text: 'Browse the available YUÉLÍN treats and offers.', to: '/home-deal#treats', cta: 'See treats' },
+  { icon: Search, title: 'Discover', text: 'Browse the available YUÉLÍN treats and offers.' },
   { icon: ShoppingBag, title: 'Purchase', text: 'Buy a treat through the configured ordering process.' },
   { icon: QrCode, title: 'Scan', text: 'Scan the permanent QR code on the package. It opens the claim page.' },
   { icon: Ticket, title: 'Claim', text: 'Sign in and enter the unique code associated with your package.', to: '/redeem', cta: 'Claim points' },

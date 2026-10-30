@@ -42,19 +42,7 @@ export function Async({ q, empty, children }) {
   return children(q.data);
 }
 
-export function ProductCard({ p }) {
-  return (
-    <article className="card stack" style={{ gap: 10 }}>
-      <div className="thumb">{p.image_url ? <img src={p.image_url} alt={p.name} loading="lazy" /> : <Cookie size={34} aria-hidden="true" />}</div>
-      <div className="row between"><h3>{p.name}</h3><span className="badge">{p.in_stock ? 'Available' : 'Sold out'}</span></div>
-      {p.description && <p className="dim">{p.description}</p>}
-      <p className="gold-text" style={{ fontWeight: 800, fontSize: 18 }}>{money(p.price)}</p>
-    </article>
-  );
-}
-
 export function OfferCard({ o }) {
-  const pr = o.products;
   return (
     <article className="card stack" style={{ gap: 10 }}>
       <div className="row between">
@@ -63,11 +51,9 @@ export function OfferCard({ o }) {
       </div>
       <h3>{o.title}</h3>
       {o.description && <p className="dim">{o.description}</p>}
-      {pr && <p className="dim small">Applies to: <b>{pr.name}</b>{pr.in_stock === false ? ' (currently sold out)' : ''}</p>}
       {o.purchase_requirement && <p className="dim small"><b>Purchase requirement:</b> {o.purchase_requirement}</p>}
       {o.conditions && <p className="dim small"><b>Conditions:</b> {o.conditions}</p>}
       {o.valid_from && <p className="dim small">Starts {day(o.valid_from)}</p>}
-      <Link to="/home-deal#treats" className="btn sm" style={{ alignSelf: 'flex-start' }}>View treats<ArrowRight size={14} /></Link>
     </article>
   );
 }

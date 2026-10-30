@@ -5,7 +5,6 @@ import { useAuth } from '../auth.jsx';
 
 const discover = [
   ['/', 'Home', Home],
-  ['/home-deal', 'Treats', Sparkles],
   ['/about-deal', 'About the brand', Info],
   ['/how-it-works-deal', 'How It Works', BookOpen],
   ['/vip-membership-deal', 'VIP Membership', Crown],
@@ -64,7 +63,7 @@ export default function Menu({ open, onClose }) {
           <button className="icon-btn" onClick={onClose} aria-label="Close menu"><X size={18} /></button>
         </div>
         {group('DISCOVER', discover)}
-        {session ? group('MY ACCOUNT', member) : group('JOIN', guest)}
+        {!session && group('JOIN', guest)}
       </aside>
     </>
   );

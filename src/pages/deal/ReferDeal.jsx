@@ -10,7 +10,6 @@ import { DealFooter, StateBox } from '../../components/deal/Parts.jsx';
 import { Field, Msg } from '../../components/Ui.jsx';
 
 // Policy v1: referral = floor(base points x 20%). Integer math, so there is no float drift.
-const EXAMPLES = [100, 50, 25, 3].map((b) => [b, Math.floor((b * 20) / 100)]);
 const RULES = [
   'Your referral username is your existing username.',
   'A friend can add one referrer, once, before their first package-code redemption. It cannot be changed afterwards.',
@@ -129,11 +128,6 @@ export default function ReferDeal() {
       <section className="card stack" aria-labelledby="rf-calc">
         <h2 id="rf-calc" className="serif">How the reward is calculated</h2>
         <p className="dim">Referral reward = base points redeemed by your friend × 20%, rounded down to a whole point.</p>
-        <div className="list">
-          {EXAMPLES.map(([b, r]) => (
-            <div key={b} className="row between"><span>Friend redeems <b>{b}</b> base points</span><span className="gold-text" style={{ fontWeight: 800 }}>You earn {r}</span></div>
-          ))}
-        </div>
         <p className="dim small">Your friend still receives all of their own points. The reward is on top, not taken from them.</p>
       </section>
 

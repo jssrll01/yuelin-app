@@ -14,11 +14,8 @@ export const isLive = (o, now = Date.now()) => !!o.is_active
   && (!o.valid_from || new Date(o.valid_from).getTime() <= now)
   && (!o.valid_until || new Date(o.valid_until).getTime() >= now);
 
-export const getProducts = (limit = 50) => run(supabase.from('products').select('*').eq('is_active', true)
-  .order('sort_order').order('created_at', { ascending: false }).limit(limit));
-
 export async function getOffers(limit = 50) {
-  const r = await run(supabase.from('offers').select('*, products(name, image_url, in_stock)').eq('is_active', true)
+  const r = await run(supabase.from('offers').select('*').eq('is_active', true)
     .order('valid_until', { ascending: true, nullsFirst: false }).limit(limit));
   return r.data ? { ...r, data: r.data.filter((o) => isLive(o)) } : r;
 }
