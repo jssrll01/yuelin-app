@@ -2,10 +2,9 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Coins, Crown, Ticket, Users } from 'lucide-react';
 import { useAuth } from '../../auth.jsx';
 import { pts } from '../../format.js';
-import { getOffers } from '../../lib/api.js';
 import useAsync from '../../lib/useAsync.js';
 import usePage from '../../lib/usePage.js';
-import { Async, DealFooter, OfferCard, SectionHead } from '../../components/deal/Parts.jsx';
+import { Async, DealFooter, SectionHead } from '../../components/deal/Parts.jsx';
 
 const VIP = ['2× loyalty points', 'One free snack each month', 'No YUÉLÍN transaction fees', 'Priority customer support', 'A personalised NFC card, once'];
 const FLOW = ['Discover treats', 'Purchase', 'Scan the permanent QR code', 'Enter the unique package code', 'Receive validated points', 'Redeem rewards', 'Refer friends'];
@@ -13,7 +12,6 @@ const FLOW = ['Discover treats', 'Purchase', 'Scan the permanent QR code', 'Ente
 export default function HomeDeal() {
   usePage('Home');
   const { session, profile } = useAuth();
-  const offers = useAsync(() => getOffers(3), []);
   return (
     <div className="stack" style={{ gap: 32 }}>
       <section className="card banner" aria-labelledby="hd-h1">
@@ -21,7 +19,7 @@ export default function HomeDeal() {
         <h1 id="hd-h1" className="serif"><span className="gold-text">Sweet Moments. Last Forever.</span></h1>
         <p className="dim" style={{ maxWidth: 480, margin: '0 auto' }}>Discover delightful treats, collect loyalty points, invite friends, and make every sweet moment count.</p>
         <div className="row" style={{ justifyContent: 'center', marginTop: 22, flexWrap: 'wrap' }}>
-          <Link to="/offers-deal" className="btn gold">View Offers</Link>
+          <Link to="/vip-membership-deal" className="btn gold">Join VIP</Link>
           <Link to="/how-it-works-deal" className="btn ghost">Discover Rewards</Link>
         </div>
       </section>
@@ -50,13 +48,6 @@ export default function HomeDeal() {
           <p className="dim">When a friend you referred redeems an eligible package code, you earn referral points too. Their points are never reduced.</p>
           <Link to="/refer-a-friend-deal" className="btn sm" style={{ alignSelf: 'flex-start' }}>Learn more<ArrowRight size={14} /></Link>
         </div>
-      </section>
-
-      <section className="stack" aria-labelledby="hd-offers">
-        <SectionHead id="hd-offers" eyebrow="OFFERS" title="Current offers" to="/offers-deal" />
-        <Async q={offers} empty={{ title: 'No active offers right now', text: 'Check back soon for something sweet.' }}>
-          {(rows) => <div className="pgrid">{rows.map((o) => <OfferCard key={o.id} o={o} />)}</div>}
-        </Async>
       </section>
 
       <section className="card stack" aria-labelledby="hd-flow">

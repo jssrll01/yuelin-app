@@ -1,6 +1,6 @@
 export const HELP_CATEGORIES = [
   'Products and ingredients', 'Orders and purchases', 'Package codes and points', 'Points redemption',
-  'Refer a Friend', 'VIP Membership', 'Transfer receipt submission', 'Offers', 'Account and privacy', 'Technical issues',
+  'Refer a Friend', 'VIP Membership', 'Transfer receipt submission', 'Account and privacy', 'Technical issues',
 ];
 
 export const HELP_FAQ = [
@@ -21,15 +21,12 @@ export const HELP_FAQ = [
   { c: 5, q: 'How much does VIP Membership cost?', a: '₱99 per month.' },
   { c: 5, q: 'How do I apply for VIP Membership?', a: 'Review the benefits and payment instructions, complete the transfer, and upload your receipt through the VIP Membership page. Membership becomes active only after payment is verified through the configured process.' },
   { c: 5, q: 'Is VIP Membership activated immediately after receipt upload?', a: 'No. Uploading a receipt submits it for verification. It does not by itself confirm payment or activate membership.' },
-  { c: 5, q: 'Does VIP Membership provide special discounts on the Offers page?', a: 'No. The Offers page uses the same published eligibility rules for regular and VIP customers.' },
   { c: 6, q: 'Which receipt files can I upload?', a: 'JPG, PNG or WebP images up to 5 MB. Make sure the amount, date and reference are readable.' },
   { c: 6, q: 'My receipt was not approved. What now?', a: 'The VIP Membership page shows the reason when one was recorded. You can submit a new receipt from the same page.' },
   { c: 6, q: 'Who can see my receipt?', a: 'Receipts are not displayed on any public page. YUÉLÍN reviews them only to verify your payment.' },
-  { c: 7, q: 'How do I know if an offer is still available?', a: 'Each offer shows its validity period. Offers that have expired or are switched off are not listed.' },
-  { c: 7, q: 'Can I combine offers?', a: 'Follow the conditions shown on each offer. Anything not stated on the offer should not be assumed.' },
-  { c: 8, q: 'Can I change my username or email address?', a: 'No. Your username and email address stay fixed. You can edit your name, phone number and address from your profile.' },
-  { c: 8, q: 'How is my information used?', a: 'Your details are used to run your account, points and rewards. Never share your password with anyone, including support.' },
-  { c: 9, q: 'How do I install YUÉLÍN as an app?', a: 'Android: open the browser menu and choose Install app or Add to Home screen. iPhone: in Safari, tap Share, then Add to Home Screen.' },
-  { c: 9, q: 'A page will not load or says it is not set up yet.', a: 'Check your connection and try again. A section that says it is not set up yet is waiting for setup, so please check back soon.' },
-  { c: 9, q: 'I cannot sign in.', a: 'Check your email address and password. After several wrong attempts, wait a few minutes before trying again.' },
+  { c: 7, q: 'Can I change my username or email address?', a: 'No. Your username and email address stay fixed. You can edit your name, phone number and address from your profile.' },
+  { c: 7, q: 'How is my information used?', a: 'Your details are used to run your account, points and rewards. Never share your password with anyone, including support.' },
+  { c: 8, q: 'How do I install YUÉLÍN as an app?', a: 'Android: open the browser menu and choose Install app or Add to Home screen. iPhone: in Safari, tap Share, then Add to Home Screen.' },
+  { c: 8, q: 'A page will not load or says it is not set up yet.', a: 'Check your connection and try again. A section that says it is not set up yet is waiting for setup, so please check back soon.' },
+  { c: 8, q: 'I cannot sign in.', a: 'Check your email address and password. After several wrong attempts, wait a few minutes before trying again.' },
 ];

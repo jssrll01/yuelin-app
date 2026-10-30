@@ -4,12 +4,8 @@ import { BookOpen, Bell, Crown, Dices, Gift, History, Home, Info, LifeBuoy, LogI
 import { useAuth } from '../auth.jsx';
 
 const discover = [
-  ['/', 'Home', Home],
   ['/about-deal', 'About the brand', Info],
   ['/how-it-works-deal', 'How It Works', BookOpen],
-  ['/vip-membership-deal', 'VIP Membership', Crown],
-  ['/refer-a-friend-deal', 'Refer a Friend', Users],
-  ['/offers-deal', 'Offers', Tag],
   ['/help-center-deal', 'Help Center', LifeBuoy]
 ];
 

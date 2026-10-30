@@ -42,22 +42,6 @@ export function Async({ q, empty, children }) {
   return children(q.data);
 }
 
-export function OfferCard({ o }) {
-  return (
-    <article className="card stack" style={{ gap: 10 }}>
-      <div className="row between">
-        <span className="ico"><Gift size={22} aria-hidden="true" /></span>
-        <span className="badge">{o.valid_until ? 'Until ' + day(o.valid_until) : 'Ongoing'}</span>
-      </div>
-      <h3>{o.title}</h3>
-      {o.description && <p className="dim">{o.description}</p>}
-      {o.purchase_requirement && <p className="dim small"><b>Purchase requirement:</b> {o.purchase_requirement}</p>}
-      {o.conditions && <p className="dim small"><b>Conditions:</b> {o.conditions}</p>}
-      {o.valid_from && <p className="dim small">Starts {day(o.valid_from)}</p>}
-    </article>
-  );
-}
-
 export function Steps({ items }) {
   return (
     <ol className="stack" style={{ listStyle: 'none' }}>

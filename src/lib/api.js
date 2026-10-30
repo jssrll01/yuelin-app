@@ -10,16 +10,6 @@ async function run(p) {
   } catch (e) { return { data: null, missing: false, error: e }; }
 }
 
-export const isLive = (o, now = Date.now()) => !!o.is_active
-  && (!o.valid_from || new Date(o.valid_from).getTime() <= now)
-  && (!o.valid_until || new Date(o.valid_until).getTime() >= now);
-
-export async function getOffers(limit = 50) {
-  const r = await run(supabase.from('offers').select('*').eq('is_active', true)
-    .order('valid_until', { ascending: true, nullsFirst: false }).limit(limit));
-  return r.data ? { ...r, data: r.data.filter((o) => isLive(o)) } : r;
-}
-
 export async function getReferral() {
   const r = await run(supabase.rpc('referral_overview'));
   if (r.data && r.data.ok === false) return { data: null, missing: false, error: new Error('Please sign in.') };

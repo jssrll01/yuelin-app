@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-import { Bell, Coins, Dices, Gift, Home, Menu as MenuIcon, Ticket, User } from 'lucide-react';
+import { Bell, Coins, Crown, Dices, Gift, Home, Menu as MenuIcon, Ticket, User, Users } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 import { pts } from '../format.js';
 import InstallPrompt from './InstallPrompt.jsx';
 import Menu from './Menu.jsx';
 
-const tabs = [['/', 'Home', Home], ['/redeem', 'Redeem', Ticket], ['/exchange', 'Rewards', Gift], ['/profile', 'Me', User]];
+const tabs = [['/', 'Home', Home], ['/redeem', 'Redeem', Ticket], ['/exchange', 'Rewards', Gift], ['/refer-a-friend-deal', 'Referral', Users], ['/vip-membership-deal', 'VIP', Crown]];
 
 export default function Layout() {
   const { session, profile, unread } = useAuth();

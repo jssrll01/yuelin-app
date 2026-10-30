@@ -16,7 +16,6 @@ import AboutDeal from './pages/deal/AboutDeal.jsx';
 import HowItWorksDeal from './pages/deal/HowItWorksDeal.jsx';
 import VipDeal from './pages/deal/VipDeal.jsx';
 import ReferDeal from './pages/deal/ReferDeal.jsx';
-import OffersDeal from './pages/deal/OffersDeal.jsx';
 import HelpCenterDeal from './pages/deal/HelpCenterDeal.jsx';
 
 const guard = (el) => <RequireAuth>{el}</RequireAuth>;
@@ -40,7 +39,6 @@ export default function App() {
         <Route path="/how-it-works-deal" element={<HowItWorksDeal />} />
         <Route path="/vip-membership-deal" element={<VipDeal />} />
         <Route path="/refer-a-friend-deal" element={<ReferDeal />} />
-        <Route path="/offers-deal" element={<OffersDeal />} />
         <Route path="/help-center-deal" element={<HelpCenterDeal />} />
         <Route path="*" element={<Home />} />
       </Route>

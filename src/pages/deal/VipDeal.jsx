@@ -31,7 +31,6 @@ const TERMS = [
   'Referral rewards are calculated from base points only, so VIP status never changes them.',
   'Free snack and NFC card entitlements are issued by YUÉLÍN. Arrangements and any costs are explained before you confirm.',
   'Waived fees cover YUÉLÍN-imposed fees only, not bank, payment-provider or other third-party charges.',
-  'The Offers page uses the same rules for everyone. VIP Membership does not unlock exclusive offers or pricing.',
   'A receipt may be declined. When a reason is recorded, it is shown on this page and you can submit a new receipt.',
 ];
 
@@ -246,7 +245,6 @@ export default function VipDeal() {
       </section>
 
       <div className="row" style={{ flexWrap: 'wrap' }}>
-        <Link to="/offers-deal" className="btn">View offers</Link>
         <Link to="/help-center-deal" className="btn">Visit the Help Center</Link>
       </div>
       <DealFooter />
