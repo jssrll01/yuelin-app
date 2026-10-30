@@ -10,6 +10,7 @@ import useAsync from '../../lib/useAsync.js';
 import usePage from '../../lib/usePage.js';
 import { DealFooter, StateBox } from '../../components/deal/Parts.jsx';
 import { Field, Msg } from '../../components/Ui.jsx';
+import PaymentDetails from '../../components/deal/PaymentDetails.jsx';
 
 const PRICE = 99;
 const ENT_LABEL = { available: 'Available', requested: 'Requested', redeemed: 'Redeemed', issued: 'Issued', fulfilled: 'Fulfilled', unavailable: 'Unavailable' };
@@ -205,6 +206,7 @@ export default function VipDeal() {
 
               <div className="field">
                 <p className="eyebrow">TRANSFER RECEIPT</p>
+                <PaymentDetails />
                 <label htmlFor="vip-receipt" className="btn block" style={{ cursor: 'pointer' }}><ImagePlus size={18} />{file ? 'Choose a different image' : 'Choose receipt image'}</label>
                 <input id="vip-receipt" type="file" accept="image/jpeg,image/png,image/webp" onChange={pick} style={{ position: 'absolute', width: 1, height: 1, opacity: 0 }} />
                 <p className="dim small">JPG, PNG or WebP, up to {RECEIPT_MAX_MB} MB. The amount, date and reference must be readable.</p>

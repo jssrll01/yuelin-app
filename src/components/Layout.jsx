@@ -6,7 +6,7 @@ import { pts } from '../format.js';
 import InstallPrompt from './InstallPrompt.jsx';
 import Menu from './Menu.jsx';
 
-const tabs = [['/', 'Home', Home], ['/redeem', 'Redeem', Ticket], ['/exchange', 'Rewards', Gift], ['/games', 'Play', Dices], ['/profile', 'Me', User]];
+const tabs = [['/', 'Home', Home], ['/redeem', 'Redeem', Ticket], ['/exchange', 'Rewards', Gift], ['/profile', 'Me', User]];
 
 export default function Layout() {
   const { session, profile, unread } = useAuth();

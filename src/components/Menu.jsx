@@ -17,7 +17,7 @@ const discover = [
 const member = [
   ['/redeem', 'Redeem a code', Ticket], 
   ['/exchange', 'Reward exchange', Gift], 
-  ['/games', 'Play with points', Dices], 
+  
   ['/history', 'Points history', History], 
   ['/notifications', 'Notifications', Bell], 
   ['/profile', 'My profile', User]

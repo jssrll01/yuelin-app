@@ -11,7 +11,6 @@ import Profile from './pages/Profile.jsx';
 import History from './pages/History.jsx';
 import RedeemCode from './pages/RedeemCode.jsx';
 import Exchange from './pages/Exchange.jsx';
-import Games from './pages/Games.jsx';
 import HomeDeal from './pages/deal/HomeDeal.jsx';
 import AboutDeal from './pages/deal/AboutDeal.jsx';
 import HowItWorksDeal from './pages/deal/HowItWorksDeal.jsx';
@@ -36,7 +35,6 @@ export default function App() {
         <Route path="/history" element={guard(<History />)} />
         <Route path="/redeem" element={guard(<RedeemCode />)} />
         <Route path="/exchange" element={guard(<Exchange />)} />
-        <Route path="/games" element={guard(<Games />)} />
         <Route path="/home-deal" element={<HomeDeal />} />
         <Route path="/about-deal" element={<AboutDeal />} />
         <Route path="/how-it-works-deal" element={<HowItWorksDeal />} />

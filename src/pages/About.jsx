@@ -9,11 +9,10 @@ const values = [
   [Sparkles, 'Always on record', 'Every point earned or spent is written to your history with a date.'],
 ];
 const faq = [
-  ['What are points?', 'Points are your balance in YUÉLÍN. You add them by redeeming codes, and you spend them on rewards or in the games. 100 points equal ₱1.'],
+  ['What are points?', 'Points are your balance in YUÉLÍN. You add them by redeeming codes, and you spend them on rewards. 100 points equal ₱1.'],
   ['Where do codes come from?', 'Codes are issued by YUÉLÍN. Each one works once per account, and some expire or have limited uses.'],
   ['What happens after I exchange a reward?', 'Your points are deducted right away and the exchange appears under My exchanges as pending. Its status changes once it has been processed.'],
   ['Can I change my details?', 'You can edit your name, phone number and address in your profile. Your username and email address stay fixed.'],
-  ['Are the games safe to play?', 'Every game shows its payouts before you play. You can lose the points you stake, so only play with points you are comfortable using.'],
 ];
 
 export default function About() {
@@ -21,7 +20,7 @@ export default function About() {
     <div className="stack">
       <PageTitle icon={Info} eyebrow="ABOUT" title={'What is ' + BRAND.name + '?'} sub="A rewards platform built around clarity." />
       <div className="card stack">
-        <p className="dim">{BRAND.name} is a members' rewards platform. You redeem codes for points, keep track of them in one place, and exchange them for rewards from a curated collection. You can also use your points in the games on the Play page.</p>
+        <p className="dim">{BRAND.name} is a members' rewards platform. You redeem codes for points, keep track of them in one place, and exchange them for rewards from a curated collection.</p>
         <div className="grid3">
           <div className="inset center"><p className="eyebrow">STARTED</p><p className="gold-text" style={{ fontSize: 24, fontWeight: 800 }}>{BRAND.since}</p></div>
           <div className="inset center"><p className="eyebrow">POINT VALUE</p><p className="gold-text" style={{ fontSize: 24, fontWeight: 800 }}>100 = ₱1</p></div>

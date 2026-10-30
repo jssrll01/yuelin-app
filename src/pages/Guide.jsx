@@ -14,7 +14,6 @@ const topics = [
   ['Exchange points for a reward', ['Open Rewards and pick an item you can afford. The progress bar shows how close you are.', 'Confirm the exchange. Points are deducted immediately.', 'Follow its status under My exchanges: pending, fulfilled or cancelled.']],
   ['Read your points history', ['Tap your balance in the header to see every point earned and spent, with the date and your balance after each change.']],
   ['Use notifications', ['The bell shows unread messages about your account, codes and exchanges. Tap a message to mark it read.']],
-  ['Play with points', ['The Play page lists each game and its payouts before you play.', 'You can lose the points you stake. Only stake what you are comfortable with.']],
   ['Install the app', ['Android: open the browser menu and choose Install app or Add to Home screen.', 'iPhone: in Safari, tap Share, then Add to Home Screen.']],
   ['Keep your details up to date', ['Open Me to update your name, phone number and address. Your username and email address cannot be changed.']],
 ];

@@ -1,6 +1,6 @@
 // Same unsigned-upload pattern as XMARKET. The preset restricts formats and folder.
 const CLOUD = 'bvw3okdf';
-export const RECEIPT_PRESET = 'yuelin_receipts';
+export const RECEIPT_PRESET = 'yuelin_vip';
 export const RECEIPT_MAX_MB = 5;
 const OK = ['image/jpeg', 'image/png', 'image/webp'];
 
