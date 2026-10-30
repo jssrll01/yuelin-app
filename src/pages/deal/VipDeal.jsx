@@ -145,9 +145,9 @@ export default function VipDeal() {
         </div>
       </div>
     );
-  } else if (vip.loading && !v) status = <StateBox kind="loading" />;
-  else if (vip.missing) status = <StateBox kind="missing" />;
+  } else if (vip.missing) status = <StateBox kind="missing" />;
   else if (vip.error) status = <StateBox kind="error" onRetry={vip.reload} />;
+  else if (!v) status = <StateBox kind="loading" />;
   else {
     const [Icon, title, text] = describe(st, v);
     status = (
