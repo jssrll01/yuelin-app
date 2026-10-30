@@ -87,3 +87,14 @@ input, textarea {
   -webkit-user-select: auto;
   user-select: auto;
 }
+
+/* Prevent text highlighting and copying */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Ensure inputs and textareas remain editable */
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
