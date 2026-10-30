@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Coins } from 'lucide-react';
+import { supabase } from '../supabase';
+import { ArrowRight, Coins, Crown } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 import { peso, pts } from '../format.js';
 import { BRAND, CAMPAIGNS } from '../brand.js';
@@ -8,12 +10,22 @@ const join = [['1', 'Create your account', 'Sign up with your email and a few de
 
 export default function Home() {
   const { session, profile } = useAuth();
+  const [vipOn, setVipOn] = useState(false);
+  const uid = session && session.user ? session.user.id : null;
+  useEffect(() => {
+    let dead = false;
+    if (!uid) { setVipOn(false); return undefined; }
+    supabase.from('vip_memberships').select('status, ends_at').eq('user_id', uid).maybeSingle()
+      .then(({ data }) => { if (!dead) setVipOn(!!data && data.status === 'active' && new Date(data.ends_at).getTime() > Date.now()); })
+      .catch(() => {});
+    return () => { dead = true; };
+  }, [uid]);
 
   return (
     <div className="stack" style={{ gap: 28 }}>
       {session ? (
         <section className="card wallet stack">
-          <div className="row between"><p className="eyebrow">WELCOME BACK</p><span className="badge">Member</span></div>
+          <div className="row between"><p className="eyebrow">WELCOME BACK</p><span className="badge">{vipOn ? <><Crown size={12} aria-hidden="true" /> VIP Member</> : 'Member'}</span></div>
           <div><p className="big gold-text">{pts(profile?.points)}</p><p className="dim">points, worth {peso(profile?.points)}</p></div>
         </section>
       ) : (
