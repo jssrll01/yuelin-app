@@ -1,15 +1,22 @@
-import { Cookie, Gift, ShoppingBag, Smartphone, Sparkles, Ticket } from 'lucide-react';
+import { Cookie, Crown, Gamepad2, Gift, Landmark, ShoppingBag, Smartphone, Ticket, Wallet } from 'lucide-react';
 
 const ICONS = [
-  [/load|data|wifi|promo/i, Smartphone],
-  [/voucher|coupon|gift ?card|ticket/i, Ticket],
-  [/treat|snack|food|sweet|chocolate|cookie|candy/i, Cookie],
+  [/load/i, Smartphone],
+  [/gcash|maya/i, Wallet],
+  [/bank/i, Landmark],
+  [/garena|voucher|coupon|ticket/i, Ticket],
+  [/treat|snack|sweet|chocolate/i, Cookie],
+  [/perk|vip|premium|special/i, Crown],
+  [/legends|farlight|free fire|pubg|roblox|valorant|rift|honor|game/i, Gamepad2],
   [/shop|merch|bag|apparel/i, ShoppingBag],
-  [/vip|premium|special/i, Sparkles],
 ];
+// Categories listed here show first, in this order. Edit freely.
+const FIRST = ['Load', 'GCash', 'Maya', 'Bank Credit', 'YUÉLÍN Treats', 'YUÉLÍN Perks'];
+
 export const catIcon = (name) => { const m = ICONS.find(([re]) => re.test(name)); return m ? m[1] : Gift; };
 export const catName = (r) => (r.category && String(r.category).trim()) || 'Other';
 export const soldOut = (r) => r.stock !== null && r.stock !== undefined && r.stock <= 0;
+const rank = (n) => { if (n === 'Other') return 999; const i = FIRST.indexOf(n); return i === -1 ? 100 : i; };
 
 export function groupRewards(list) {
   const m = new Map();
@@ -19,7 +26,7 @@ export function groupRewards(list) {
     m.get(k).push(r);
   });
   return [...m.entries()]
-    .sort((a, b) => (a[0] === 'Other') - (b[0] === 'Other') || a[0].localeCompare(b[0]))
+    .sort((a, b) => rank(a[0]) - rank(b[0]) || a[0].localeCompare(b[0]))
     .map(([name, items]) => ({ name, items, min: items[0].cost_points }));
 }
 
