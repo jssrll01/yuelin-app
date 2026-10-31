@@ -65,6 +65,7 @@ export default function Menu({ open, onClose }) {
           <button className="icon-btn" onClick={onClose} aria-label="Close menu"><X size={18} /></button>
         </div>
         {group('DISCOVER', discover)}
+        {session && group('MY ACCOUNT', member)}
         {!session && group('JOIN', guest)}
       </aside>
     </>
