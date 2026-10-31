@@ -5,12 +5,14 @@ import { useAuth } from '../auth.jsx';
 import { pts } from '../format.js';
 import InstallPrompt from './InstallPrompt.jsx';
 import Menu from './Menu.jsx';
+import { useRefCapture } from '../lib/refCapture.js';
 
 const tabs = [['/', 'Home', Home], ['/redeem', 'Redeem', Ticket], ['/exchange', 'Rewards', Gift], ['/refer-a-friend-deal', 'Referral', Users], ['/vip-membership-deal', 'VIP', Crown]];
 
 export default function Layout() {
   const { session, profile, unread } = useAuth();
   const loc = useLocation();
+  useRefCapture();
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
   return (

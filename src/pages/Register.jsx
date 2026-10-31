@@ -6,6 +6,7 @@ import { useAuth } from '../auth.jsx';
 import { cleanPhone, phoneOk } from '../format.js';
 import { Field, Msg } from '../components/Ui.jsx';
 import BackButton from '../components/BackButton.jsx';
+import { refCode } from '../lib/refCapture.js';
 
 const blank = { username: '', first_name: '', last_name: '', phone: '', email: '', password: '', confirm: '', province: '', city: '', barangay: '' };
 const friendly = (m) => (/already registered|already been registered/i.test(m) ? 'That email address is already registered. Try signing in instead.'
@@ -83,6 +84,7 @@ export default function Register() {
         <Field label="City / Municipality" icon={Building2} value={f.city} onChange={set('city')} />
         <Field label="Barangay" icon={Home} value={f.barangay} onChange={set('barangay')} />
       </div>
+      {refCode() && <p className="small dim">You were invited by <b>{refCode()}</b>. We will add this automatically.</p>}
       <Msg>{err}</Msg>
       <button className="btn gold block" disabled={busy}>{busy ? <Loader2 size={18} className="spin" /> : <UserPlus size={18} />}{busy ? 'Creating account…' : 'Create account'}</button>
       <p className="center dim">Already a member? <Link to="/login" className="gold-text" style={{ fontWeight: 700 }}>Sign in</Link></p>

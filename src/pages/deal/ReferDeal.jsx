@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AtSign, Check, Copy } from 'lucide-react';
+import { AtSign, Check, Copy, Share2 } from 'lucide-react';
+import { refLink } from '../../lib/refCapture.js';
 import { useAuth } from '../../auth.jsx';
 import { day, pts } from '../../format.js';
 import { getReferral, registerReferral } from '../../lib/api.js';
@@ -11,7 +12,7 @@ import { Field, Msg } from '../../components/Ui.jsx';
 
 // Policy v1: referral = floor(base points x 20%). Integer math, so there is no float drift.
 const RULES = [
-  'Your referral username is your existing username.',
+  'Your referral link is built from your username. When a friend opens it, the code is saved on their device and added automatically when they sign up.',
   'A friend can add one referrer, once, before their first package-code redemption. It cannot be changed afterwards.',
   'You cannot refer yourself, and two accounts cannot refer each other.',
   'Points come only from a friend successfully redeeming a valid package code, not from opening a link or creating an account.',
@@ -34,6 +35,15 @@ export default function ReferDeal() {
   const copy = async () => {
     try { await navigator.clipboard.writeText(d.username); setCopied(true); setTimeout(() => setCopied(false), 1800); }
     catch (e) { setMsg({ kind: 'bad', text: 'Copy failed. Select your username and copy it manually.' }); }
+  };
+  const share = async () => {
+    const url = refLink(d.username);
+    const text = 'Join me on YUÉLÍN and earn rewards.';
+    try {
+      if (navigator.share) { await navigator.share({ title: 'YUÉLÍN', text, url }); return; }
+      await navigator.clipboard.writeText(url);
+      setCopied(true); setTimeout(() => setCopied(false), 1800);
+    } catch (e) { if (e && e.name !== 'AbortError') setMsg({ kind: 'bad', text: 'Could not share. Copy your username instead.' }); }
   };
   const add = async (e) => {
     e.preventDefault();
@@ -75,7 +85,9 @@ export default function ReferDeal() {
           <button type="button" className="btn gold sm" style={{ alignSelf: 'flex-start' }} onClick={copy}>
             {copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'Copied' : 'Copy username'}
           </button>
-          <p className="dim small">Share your username, never your password. Friends enter it on this page before their first package-code redemption.</p>
+          <button type="button" className="btn sm" style={{ alignSelf: 'flex-start' }} onClick={share}><Share2 size={16} />Share referral link</button>
+          <p className="dim small">Your link: <b style={{ wordBreak: 'break-all' }}>{refLink(d.username)}</b></p>
+          <p className="dim small">Share the link, never your password. It fills in your username for your friend automatically.</p>
         </div>
 
         <div className="grid3">
