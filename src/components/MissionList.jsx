@@ -20,8 +20,8 @@ export async function loadMissions(uidv) {
     const target = Number(x.target_count || 1);
     const prog = pr ? Number(pr.current_count || 0) : 0;
     const done = !!(pr && pr.is_completed);
-    const starts = x.starts_at ? new Date(x.starts_at).getTime() : null;
-    const ends = x.ends_at || x.expires_at ? new Date(x.ends_at || x.expires_at).getTime() : null;
+    const sd = x.starts_at || x.start_date; const starts = sd ? new Date(sd).getTime() : null;
+    const ed = x.ends_at || x.end_date || x.expires_at; const ends = ed ? new Date(ed).getTime() : null;
     const state = done ? 'done' : (ends && ends < now) ? 'expired' : (starts && starts > now) ? 'soon' : 'open';
     return { ...x, target, prog, done, state, doneAt: pr && pr.completed_at, ends };
   }).filter((x) => x.state !== 'expired' || x.done);
@@ -33,7 +33,7 @@ export function MissionCard({ m }) {
   return (
     <div className="card stack mis" style={{ gap: 10 }}>
       <div className="row" style={{ alignItems: 'flex-start' }}>
-        {m.image_url ? <img className="rimg sm" src={m.image_url} alt="" loading="lazy" /> : <span className="ico"><Target size={20} /></span>}
+        {(m.image_url || m.icon_url) ? <img className="rimg sm" src={m.image_url || m.icon_url} alt="" loading="lazy" /> : <span className="ico"><Target size={20} /></span>}
         <div style={{ flex: 1 }}><h3>{m.title}</h3>{m.description && <p className="dim small">{m.description}</p>}</div>
         <span className="tagline gold">+{pts(m.reward_points || 0)}</span>
       </div>
@@ -41,7 +41,7 @@ export function MissionCard({ m }) {
       <div className="row between small">
         <span className="dim">{Math.min(m.prog, m.target)} / {m.target}</span>
         {m.done ? <span className="tagline ok"><CheckCircle2 size={12} />Completed{m.doneAt ? ' · ' + day(m.doneAt) : ''}</span>
-          : m.state === 'soon' ? <span className="tagline gold">Starts {day(m.starts_at)}</span>
+          : m.state === 'soon' ? <span className="tagline gold">Starts {day(m.starts_at || m.start_date)}</span>
           : m.ends ? <span className="dim"><Clock size={12} style={{ verticalAlign: '-2px' }} /> Ends {day(m.ends)}</span> : <span className="dim">In progress</span>}
       </div>
     </div>
