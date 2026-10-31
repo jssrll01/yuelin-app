@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, Cookie, Gift, Inbox, Loader2, Settings } from 'lucide-react';
 import { DEAL_LINKS, SITE } from '../../lib/siteConfig.js';
 import { day, money } from '../../format.js';
+import { SkCard } from '../Ui.jsx';
 
 export function SectionHead({ eyebrow, title, sub, to, cta, id }) {
   return (
@@ -17,6 +18,7 @@ export function SectionHead({ eyebrow, title, sub, to, cta, id }) {
 }
 
 export function StateBox({ kind, title, text, onRetry }) {
+  if (kind === 'loading') return <div className="stack" role="status" aria-busy="true"><SkCard /><SkCard /></div>;
   const base = {
     loading: [Loader2, 'Loading…', ''],
     empty: [Inbox, 'Nothing here yet', ''],

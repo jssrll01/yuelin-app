@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Bell, Coins, Crown, Dices, Gift, Home, Menu as MenuIcon, Ticket, User, Users } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 import { pts } from '../format.js';
@@ -10,6 +10,7 @@ const tabs = [['/', 'Home', Home], ['/redeem', 'Redeem', Ticket], ['/exchange', 
 
 export default function Layout() {
   const { session, profile, unread } = useAuth();
+  const loc = useLocation();
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
   return (
@@ -30,7 +31,7 @@ export default function Layout() {
         </div>
       </header>
       <Menu open={open} onClose={close} />
-      <main className="page"><Outlet /></main>
+      <main className="page"><div key={loc.pathname} className="route-in"><Outlet /></div></main>
       {session && (
         <nav className="bottom" aria-label="Main">
           <div className="bottom-in">
