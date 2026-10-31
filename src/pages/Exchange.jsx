@@ -1,232 +1,126 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Gift, Star, Search, SlidersHorizontal } from 'lucide-react';
+import { Flame, Gem, Gift, LayoutGrid, PackageOpen, Target } from 'lucide-react';
 import { supabase } from '../supabase';
 import { useAuth } from '../auth.jsx';
-import { pts } from '../format.js';
-import { Empty, PageTitle, Spinner } from '../components/Ui.jsx';
-import RedemptionModal from '../components/RedemptionModal.jsx';
-
-function RewardImage({ src, alt }) {
-  const [failed, setFailed] = useState(false);
-
-  if (!src || failed) {
-    return (
-      <div className="w-full h-full bg-neutral-950/80 flex flex-col items-center justify-center text-amber-400/50 p-2">
-        <Gift className="w-8 h-8 mb-1 opacity-70" />
-        <span className="text-[10px] text-neutral-500 font-medium">YUÉLÍN Perk</span>
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={src}
-      alt={alt}
-      onError={() => setFailed(true)}
-      className="w-full h-full object-cover"
-    />
-  );
-}
+import { peso, pts, uid, when } from '../format.js';
+import { Empty, Msg, PageTitle, Spinner } from '../components/Ui.jsx';
+import { catIcon, groupRewards, nextGoal, soldOut } from '../lib/rewardsCat.js';
 
 export default function Exchange() {
   const { profile, refresh } = useAuth();
   const [sp, setSp] = useSearchParams();
   const [rewards, setRewards] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
-  const [selectedReward, setSelectedReward] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Filter States
-  const [search, setSearch] = useState('');
-  const [minCost, setMinCost] = useState('');
-  const [maxCost, setMaxCost] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [affordability, setAffordability] = useState('all');
+  const [mine, setMine] = useState([]);
+  const [pick, setPick] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [ok, setOk] = useState('');
 
   const load = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-
-    const [a, w] = await Promise.all([
+    const [a, b] = await Promise.all([
       supabase.from('rewards').select('*').eq('is_active', true).order('cost_points'),
-      user ? supabase.from('user_wishlists').select('reward_id').eq('user_id', user.id) : Promise.resolve({ data: [] }),
+      supabase.from('redemptions').select('*, rewards(name)').order('created_at', { ascending: false }).limit(20),
     ]);
-
-    setRewards(a.data || []);
-    if (w.data) setWishlist(w.data.map((item) => item.reward_id));
+    setRewards(a.data || []); setMine(b.data || []);
   }, []);
-
   useEffect(() => { load(); }, [load]);
 
-  const toggleWishlist = async (rewardId) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+  const groups = useMemo(() => groupRewards(rewards || []), [rewards]);
+  if (!rewards) return <Spinner />;
+  const bal = Number(profile?.points || 0);
+  const sel = sp.get('c') || 'All';
+  const active = groups.some((g) => g.name === sel) ? sel : 'All';
+  const shown = active === 'All' ? groups : groups.filter((g) => g.name === active);
+  const goal = nextGoal(rewards, bal);
+  const setCat = (c) => { const n = new URLSearchParams(sp); if (c === 'All') n.delete('c'); else n.set('c', c); setSp(n, { replace: true }); };
 
-    if (wishlist.includes(rewardId)) {
-      await supabase.from('user_wishlists').delete().eq('user_id', user.id).eq('reward_id', rewardId);
-      setWishlist(wishlist.filter((id) => id !== rewardId));
-    } else {
-      await supabase.from('user_wishlists').insert({ user_id: user.id, reward_id: rewardId });
-      setWishlist([...wishlist, rewardId]);
-    }
+  const open = (r) => { setErr(''); setOk(''); setPick({ r, key: uid() }); };
+  const confirm = async () => {
+    setBusy(true);
+    const { data, error } = await supabase.rpc('exchange_reward', { p_reward: pick.r.id, p_key: pick.key });
+    setBusy(false);
+    setPick(null);
+    if (error) return setErr('Something went wrong. Please try again.');
+    if (!data.ok) return setErr(data.error);
+    setOk('Exchange placed. We will process it shortly.');
+    refresh(); load();
   };
 
-  const bal = Number(profile?.points || 0);
-
-  const filteredRewards = useMemo(() => {
-    if (!rewards) return [];
-
-    let list = rewards.filter((r) => {
-      const cost = Number(r.cost_points || r.points_required || 0);
-      if (search && !r.name.toLowerCase().includes(search.toLowerCase())) return false;
-      if (minCost && cost < Number(minCost)) return false;
-      if (maxCost && cost > Number(maxCost)) return false;
-
-      if (affordability === 'affordable' && cost > bal) return false;
-      if (affordability === 'unaffordable' && cost <= bal) return false;
-
-      return true;
-    });
-
-    list.sort((a, b) => {
-      const costA = Number(a.cost_points || a.points_required || 0);
-      const costB = Number(b.cost_points || b.points_required || 0);
-      return sortOrder === 'asc' ? costA - costB : costB - costA;
-    });
-
-    return list;
-  }, [rewards, search, minCost, maxCost, affordability, sortOrder, bal]);
-
-  if (!rewards) return <Spinner />;
-
   return (
-    <div className="space-y-6 pb-16 text-xs text-neutral-100 max-w-4xl mx-auto px-1">
-      <PageTitle title="Exchange Rewards" subtitle="Redeem your YUÉLÍN points for exclusive perks and vouchers." />
+    <div className="stack">
+      <PageTitle icon={Gift} eyebrow="COLLECTION" title="Reward exchange" sub={'Your balance: ' + pts(bal) + ' points (' + peso(bal) + ')'} />
+      <Msg>{err}</Msg><Msg kind="good">{ok}</Msg>
 
-      {/* Structured Filter Panel */}
-      <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-2xl space-y-3 shadow-lg">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-neutral-500" />
-            <input
-              type="text"
-              placeholder="Search rewards..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-neutral-200 outline-none focus:border-amber-400/60 placeholder:text-neutral-600"
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="Min Pts"
-              value={minCost}
-              onChange={(e) => setMinCost(e.target.value)}
-              className="w-1/2 bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-neutral-200 outline-none focus:border-amber-400/60 placeholder:text-neutral-600"
-            />
-            <input
-              type="number"
-              placeholder="Max Pts"
-              value={maxCost}
-              onChange={(e) => setMaxCost(e.target.value)}
-              className="w-1/2 bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-neutral-200 outline-none focus:border-amber-400/60 placeholder:text-neutral-600"
-            />
-          </div>
-
-          <select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-neutral-200 outline-none focus:border-amber-400/60"
-          >
-            <option value="asc">Cost: Low to High</option>
-            <option value="desc">Cost: High to Low</option>
-          </select>
-        </div>
-
-        {/* Tab Filters */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-neutral-800/80">
-          {[
-            { id: 'all', label: 'All Rewards' },
-            { id: 'affordable', label: 'Affordable with Balance' },
-            { id: 'unaffordable', label: 'Requires More Points' },
-          ].map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setAffordability(f.id)}
-              className={`px-3 py-1.5 rounded-xl transition font-medium text-[11px] border ${
-                affordability === f.id
-                  ? 'bg-amber-400 text-neutral-950 font-bold border-amber-400'
-                  : 'bg-neutral-950 text-neutral-400 border-neutral-800 hover:text-neutral-200'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Rewards Cards Grid */}
-      {filteredRewards.length === 0 ? (
-        <Empty msg="No rewards match your criteria." />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredRewards.map((item) => {
-            const cost = Number(item.cost_points || item.points_required || 0);
-            const deficit = cost - bal;
-            const isSaved = wishlist.includes(item.id);
-
-            return (
-              <div key={item.id} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex flex-col justify-between shadow-md hover:border-neutral-700 transition">
-                <div>
-                  <div className="relative h-36 w-full rounded-xl overflow-hidden mb-3 bg-neutral-950 border border-neutral-800/60 flex items-center justify-center">
-                    <RewardImage src={item.image_url} alt={item.name} />
-                    <button
-                      onClick={() => toggleWishlist(item.id)}
-                      className="absolute top-2 right-2 bg-neutral-950/80 p-2 rounded-full border border-neutral-800 text-amber-400 hover:scale-105 transition shadow-md z-10"
-                    >
-                      <Star className={`w-3.5 h-3.5 ${isSaved ? 'fill-amber-400 text-amber-400' : 'text-neutral-400'}`} />
-                    </button>
-                  </div>
-                  <h3 className="font-semibold text-neutral-100 text-sm line-clamp-2">{item.name}</h3>
-                  <p className="text-amber-400 font-bold text-sm mt-1">{pts(cost)}</p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-neutral-800/80">
-                  {deficit > 0 ? (
-                    <p className="text-[11px] text-neutral-400 mb-2">
-                      You need <span className="text-amber-300 font-semibold">{pts(deficit)} more</span>
-                    </p>
-                  ) : (
-                    <p className="text-[11px] text-emerald-400 font-medium mb-2">Eligible for Redemption</p>
-                  )}
-                  <button
-                    onClick={() => {
-                      setSelectedReward(item);
-                      setIsModalOpen(true);
-                    }}
-                    className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-neutral-950 font-bold rounded-xl transition shadow-sm text-xs"
-                  >
-                    Redeem Reward
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+      {goal && (
+        <div className="card stack" style={{ gap: 8 }}>
+          <div className="row"><span className="ico"><Target size={20} /></span>
+            <div style={{ flex: 1 }}><h3>Next up: {goal.name}</h3><p className="dim small">Only <b>{pts(goal.cost_points - bal)}</b> more points ({peso(goal.cost_points - bal)}) to unlock it.</p></div></div>
+          <div className="bar"><i style={{ width: Math.max(4, Math.min(100, (bal / goal.cost_points) * 100)) + '%' }} /></div>
         </div>
       )}
 
-      {/* Atomic Confirmation Dialog */}
-      <RedemptionModal
-        reward={selectedReward}
-        userPoints={bal}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={() => {
-          refresh();
-          load();
-        }}
-      />
+      {rewards.length > 0 && (
+        <div className="cats" role="tablist" aria-label="Reward categories">
+          <button role="tab" aria-selected={active === 'All'} className={'cat' + (active === 'All' ? ' on' : '')} onClick={() => setCat('All')}><LayoutGrid size={16} />All <small>{rewards.length}</small></button>
+          {groups.map((g) => { const I = catIcon(g.name); return (
+            <button key={g.name} role="tab" aria-selected={active === g.name} className={'cat' + (active === g.name ? ' on' : '')} onClick={() => setCat(g.name)}><I size={16} />{g.name} <small>{g.items.length}</small></button>
+          ); })}
+        </div>
+      )}
+
+      {!rewards.length && <Empty icon={Gem} title="The collection is being curated" text="New rewards will appear here soon." />}
+
+      {shown.map((g) => { const I = catIcon(g.name); return (
+        <section key={g.name} className="stack" style={{ gap: 12 }}>
+          {(active === 'All' || shown.length > 1) && (
+            <div className="sec-h"><h2 className="row" style={{ gap: 8 }}><I size={20} className="gold-text" />{g.name}</h2><span className="dim small">from {pts(g.min)} pts</span></div>
+          )}
+          <div className="grid2 stag">
+            {g.items.map((r, i) => {
+              const out = soldOut(r);
+              const can = !out && bal >= r.cost_points;
+              const low = !out && r.stock !== null && r.stock !== undefined && r.stock <= 5;
+              return (
+                <div key={r.id} className="card lift stack" style={{ gap: 10, '--i': i }}>
+                  <div className="row"><span className="ico"><I size={22} /></span>
+                    <div style={{ flex: 1 }}><h3>{r.name}</h3><p className="gold-text" style={{ fontWeight: 800 }}>{pts(r.cost_points)} pts <span className="dim small">({peso(r.cost_points)})</span></p></div></div>
+                  {r.description && <p className="dim">{r.description}</p>}
+                  <div className="bar" aria-label="Progress toward this reward"><i style={{ width: Math.min(100, (bal / r.cost_points) * 100) + '%' }} /></div>
+                  <div className="row between">
+                    {out ? <span className="dim small">Out of stock</span> : low ? <span className="tagline hot"><Flame size={12} />Only {r.stock} left</span> : <span className="tagline ok">{r.stock !== null && r.stock !== undefined ? r.stock + ' left' : 'Available'}</span>}
+                    <button className={'btn gold sm' + (can ? ' pulse' : '')} disabled={!can} onClick={() => open(r)}>{out ? 'Unavailable' : can ? 'Exchange' : 'Need ' + pts(r.cost_points - bal) + ' more'}</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ); })}
+
+      <h2>My exchanges</h2>
+      {!mine.length && <Empty icon={PackageOpen} title="No exchanges yet" text="Your exchanged rewards and their status will be listed here." />}
+      {mine.length > 0 && (
+        <div className="card list">
+          {mine.map((m) => (
+            <div key={m.id} className="row between">
+              <div><h3>{m.rewards?.name || 'Reward'}</h3><p className="dim small">{when(m.created_at)}</p></div>
+              <div style={{ textAlign: 'right' }}><span className="badge">{m.status}</span><p className="dim small">{pts(m.points_spent)} pts</p></div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {pick && (
+        <div className="modal" role="dialog" aria-modal="true">
+          <div className="card stack route-in">
+            <h2>Confirm exchange</h2>
+            <p className="dim">Exchange <b>{pts(pick.r.cost_points)} points</b> for <b>{pick.r.name}</b>? Points are deducted immediately.</p>
+            <div className="row"><button className="btn ghost" style={{ flex: 1 }} onClick={() => setPick(null)}>Cancel</button>
+              <button className="btn gold" style={{ flex: 1 }} disabled={busy} onClick={confirm}>{busy ? 'Working…' : 'Confirm'}</button></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
