@@ -45,18 +45,21 @@ export default function Missions() {
   const filtered = missions.filter((m) => m.category === category);
 
   return (
-    <div className="space-y-6 pb-12">
-      <PageTitle title="Mission Center" subtitle="Complete ecosystem tasks to earn bonus loyalty points." />
+    <div className="space-y-6 pb-12 text-slate-800 bg-slate-50/30 min-h-screen">
+      <div className="px-4 pt-4">
+         <h1 className="text-2xl font-extrabold tracking-tight">Mission Center</h1>
+         <p className="text-slate-500 text-sm mt-1">Complete tasks to earn bonus points.</p>
+      </div>
 
-      <div className="flex gap-2 border-b border-neutral-800 pb-3 overflow-x-auto text-xs">
+      <div className="flex gap-2 px-4 overflow-x-auto pb-2 scrollbar-hide">
         {['daily', 'weekly', 'special', 'seasonal'].map((cat) => (
           <button
             key={cat}
             onClick={() => setCategory(cat)}
-            className={`px-4 py-2 rounded-xl capitalize font-medium transition ${
+            className={`px-5 py-2 rounded-full capitalize font-bold text-sm whitespace-nowrap transition-all ${
               category === cat
-                ? 'bg-amber-400 text-neutral-950 font-bold shadow-lg shadow-amber-400/10'
-                : 'bg-neutral-900 text-neutral-400 border border-neutral-800 hover:text-neutral-200'
+                ? 'bg-slate-800 text-white shadow-md'
+                : 'bg-white text-slate-500 border border-slate-200 shadow-sm'
             }`}
           >
             {cat}
@@ -65,45 +68,50 @@ export default function Missions() {
       </div>
 
       {loading ? (
-        <Spinner />
+        <div className="pt-10"><Spinner /></div>
       ) : filtered.length === 0 ? (
-        <p className="text-neutral-500 py-12 text-center text-xs">No active {category} missions right now.</p>
+        <p className="text-slate-400 py-12 text-center text-sm font-medium">No active {category} missions right now.</p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4 px-4">
           {filtered.map((m) => {
             const target = m.target_count || 1;
             const progress = m.progress || 0;
             const percent = Math.min(100, Math.round((progress / target) * 100));
 
             return (
-              <div key={m.id} className="bg-neutral-900 border border-neutral-800 p-4 rounded-2xl flex items-center justify-between gap-4 text-xs">
-                <div className="flex-grow space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-neutral-100 text-sm">{m.title}</span>
-                    <span className="bg-amber-500/10 text-amber-400 font-bold px-2.5 py-0.5 rounded-full text-[10px] border border-amber-500/20">
-                      +{pts(m.reward_points || 50)}
+              <div key={m.id} className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm flex flex-col gap-4">
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-base">{m.title}</h3>
+                    <p className="text-slate-500 text-xs mt-1 leading-relaxed">{m.description}</p>
+                  </div>
+                  <span className="bg-amber-50 text-amber-600 font-extrabold px-3 py-1.5 rounded-xl text-xs whitespace-nowrap border border-amber-100">
+                    +{pts(m.reward_points || 50)}
+                  </span>
+                </div>
+
+                <div className="pt-2">
+                  <div className="flex justify-between text-[11px] font-bold text-slate-400 mb-2 uppercase tracking-wide">
+                    <span>Progress</span>
+                    <span className={m.is_completed ? 'text-emerald-500' : 'text-slate-600'}>
+                      {progress} / {target}
                     </span>
                   </div>
-                  <p className="text-neutral-400 text-xs">{m.description}</p>
-
-                  <div className="max-w-sm pt-1">
-                    <div className="flex justify-between text-[10px] text-neutral-500 mb-1">
-                      <span>Progress</span>
-                      <span>{progress} / {target}</span>
-                    </div>
-                    <div className="h-1.5 bg-neutral-950 rounded-full overflow-hidden border border-neutral-800">
-                      <div className="h-full bg-amber-400 transition-all duration-300" style={{ width: `${percent}%` }} />
-                    </div>
+                  <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-500 rounded-full ${m.is_completed ? 'bg-emerald-400' : 'bg-amber-400'}`}
+                      style={{ width: `${percent}%` }}
+                    />
                   </div>
                 </div>
 
-                <div>
+                <div className="pt-2 flex justify-end">
                   {m.is_completed ? (
-                    <span className="flex items-center gap-1.5 text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-3 py-1.5 rounded-xl font-medium text-xs">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Completed
+                    <span className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-2xl font-bold text-xs border border-emerald-100">
+                      <CheckCircle2 className="w-4 h-4" /> Completed
                     </span>
                   ) : (
-                    <span className="text-neutral-500 bg-neutral-950 border border-neutral-800 px-3 py-1.5 rounded-xl text-xs">
+                    <span className="text-slate-500 font-bold px-4 py-2 rounded-2xl text-xs bg-slate-50 border border-slate-100">
                       In Progress
                     </span>
                   )}

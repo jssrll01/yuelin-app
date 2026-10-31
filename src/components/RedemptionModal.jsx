@@ -18,7 +18,7 @@ export default function RedemptionModal({ reward, userPoints = 0, isOpen, onClos
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setError('Authentication expired. Please log in again.');
+      setError('Session expired. Please log in again.');
       setBusy(false);
       return;
     }
@@ -53,63 +53,67 @@ export default function RedemptionModal({ reward, userPoints = 0, isOpen, onClos
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-neutral-900 border border-amber-500/30 rounded-2xl max-w-md w-full p-6 text-xs text-neutral-100 shadow-2xl relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
-          <X className="w-4 h-4" />
+    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl max-w-md w-full p-6 text-sm text-slate-800 shadow-2xl relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full p-1 transition">
+          <X className="w-5 h-5" />
         </button>
 
-        <h3 className="text-base font-serif text-amber-100 mb-1">Confirm Redemption</h3>
-        <p className="text-neutral-400 mb-4 text-[11px]">Review details before deducting points from your account balance.</p>
+        <h3 className="text-lg font-bold text-slate-900 mb-1">Confirm Redemption</h3>
+        <p className="text-slate-500 mb-6 text-xs">Review details before deducting points from your balance.</p>
 
-        <div className="bg-neutral-950 p-3 rounded-xl border border-neutral-800 flex items-center gap-3 mb-4">
-          {reward.image_url && (
-            <img src={reward.image_url} alt={reward.name} className="w-14 h-14 object-cover rounded-lg bg-neutral-900 flex-shrink-0" />
+        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-4 mb-6 shadow-inner">
+          {reward.image_url ? (
+            <img src={reward.image_url} alt={reward.name} className="w-12 h-12 object-cover rounded-xl shadow-sm flex-shrink-0" />
+          ) : (
+            <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center border border-slate-100 flex-shrink-0">
+              <span className="text-xl">🎁</span>
+            </div>
           )}
           <div>
-            <h4 className="font-semibold text-neutral-200 text-xs">{reward.name}</h4>
-            <p className="text-amber-400 font-bold text-xs mt-0.5">{pts(cost)}</p>
+            <h4 className="font-bold text-slate-800 text-sm leading-tight">{reward.name}</h4>
+            <p className="text-amber-500 font-extrabold text-xs mt-1">{pts(cost)}</p>
           </div>
         </div>
 
-        <div className="space-y-2 border-t border-b border-neutral-800/80 py-3 mb-4 text-[11px]">
-          <div className="flex justify-between text-neutral-400">
-            <span>Current Balance:</span>
-            <span className="text-neutral-200 font-mono">{pts(userPoints)}</span>
+        <div className="space-y-3 border-t border-b border-slate-100 py-4 mb-6 text-xs font-medium">
+          <div className="flex justify-between text-slate-500">
+            <span>Current Balance</span>
+            <span className="text-slate-800 font-bold">{pts(userPoints)}</span>
           </div>
-          <div className="flex justify-between text-neutral-400">
-            <span>Points Cost:</span>
-            <span className="text-amber-400 font-mono font-semibold">-{pts(cost)}</span>
+          <div className="flex justify-between text-slate-500">
+            <span>Points Cost</span>
+            <span className="text-amber-500 font-bold">-{pts(cost)}</span>
           </div>
-          <div className="flex justify-between text-neutral-200 font-medium pt-1 border-t border-neutral-800/60">
-            <span>Projected Balance:</span>
-            <span className={`font-mono ${projected < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+          <div className="flex justify-between text-slate-800 font-bold pt-2 border-t border-slate-100">
+            <span>Projected Balance</span>
+            <span className={projected < 0 ? 'text-red-500' : 'text-emerald-500'}>
               {pts(projected)}
             </span>
           </div>
         </div>
 
         {error && (
-          <div className="p-2.5 bg-red-950/60 border border-red-800 text-red-200 rounded-lg text-[11px] mb-4 flex items-center gap-2">
+          <div className="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs mb-6 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
-            <span>{error}</span>
+            <span className="font-medium">{error}</span>
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             onClick={onClose}
             disabled={busy}
-            className="flex-1 py-2.5 font-medium text-neutral-400 bg-neutral-800 hover:bg-neutral-700 rounded-xl transition text-xs"
+            className="flex-1 py-3 font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-2xl transition text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
             disabled={busy || projected < 0}
-            className="flex-1 py-2.5 font-bold text-neutral-950 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 rounded-xl transition text-xs"
+            className="flex-1 py-3 font-bold text-slate-900 bg-amber-400 hover:bg-amber-500 disabled:opacity-50 disabled:bg-amber-200 rounded-2xl transition shadow-sm text-sm"
           >
-            {busy ? 'Processing...' : 'Confirm Redemption'}
+            {busy ? 'Processing...' : 'Confirm'}
           </button>
         </div>
       </div>
