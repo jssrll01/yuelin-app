@@ -1,0 +1,27 @@
+/* v3: rewards filters, wishlist, missions, leaderboard, dialogs */
+.rimg{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:16px;background:var(--bg);box-shadow:var(--press);display:block}
+.rimg.sm{width:52px;height:52px;aspect-ratio:1;flex-shrink:0;border-radius:14px}
+.rimg.ph{display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.fr{flex:0 0 190px;display:flex;flex-direction:column;gap:6px;padding:12px;scroll-snap-align:start}
+.heart{flex-shrink:0;color:var(--dim)}
+.heart.on{color:var(--bad)}
+.flt summary{cursor:pointer;font-weight:700;list-style:none}
+.flt summary::-webkit-details-marker{display:none}
+.fld{display:flex;flex-direction:column;gap:4px;flex:1;font-size:12px;font-weight:700;color:var(--dim)}
+.fld input,.fld select{padding:10px 12px;border-radius:12px;border:0;background:var(--bg);box-shadow:var(--press);font:inherit;color:inherit;min-width:0;width:100%}
+.cr{max-height:88vh;overflow:auto;width:min(440px,92vw)}
+.sum{display:flex;flex-direction:column;gap:0;border-radius:16px;box-shadow:var(--press);overflow:hidden}
+.sum>div{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(163,172,192,.28);font-size:14px}
+.sum>div:last-child{border-bottom:0}
+.sum span{color:var(--dim)}
+.sum .tot{background:rgba(184,134,11,.08);font-weight:800}
+.down{color:var(--bad)}
+.tagline.warn{background:rgba(212,140,20,.14);color:#a36a00}.tagline.bad{background:rgba(194,69,58,.12);color:var(--bad)}
+.lb{padding:4px 0}.lb.me{background:rgba(184,134,11,.08);border-radius:12px;padding:6px 8px}
+.rk{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;background:var(--bg);box-shadow:var(--raise-sm);flex-shrink:0}
+.rk.r1{color:#b8860b}.rk.r2{color:#8a94a6}.rk.r3{color:#a0643a}
+.av{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.ach.on{border:1px solid rgba(184,134,11,.3)}
+.ach:not(.on){opacity:.8}
+.cats .cat{scroll-snap-align:start}
+input[type=checkbox]{width:18px;height:18px;accent-color:#b8860b}

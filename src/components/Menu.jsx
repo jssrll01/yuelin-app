@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { BookOpen, Bell, Crown, Dices, Gift, History, Home, Info, LifeBuoy, LogIn, Sparkles, Tag, Ticket, User, UserPlus, Users, X } from 'lucide-react';
+import { Award, BookOpen, Bell, Heart, PackageOpen, Target, Trophy, Crown, Dices, Gift, History, Home, Info, LifeBuoy, LogIn, Sparkles, Tag, Ticket, User, UserPlus, Users, X } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 
 const discover = [
@@ -11,7 +11,13 @@ const discover = [
 
 const member = [
   ['/redeem', 'Redeem a code', Ticket], 
-  ['/exchange', 'Reward exchange', Gift], 
+  ['/exchange', 'Reward exchange', Gift],
+  ['/wishlist', 'Wishlist', Heart],
+  ['/redemptions', 'My exchanges', PackageOpen],
+  ['/missions', 'Mission center', Target],
+  ['/achievements', 'Achievements', Award],
+  ['/leaderboard', 'Leaderboard', Trophy],
+  ['/vip-dashboard', 'VIP dashboard', Crown],
   
   ['/history', 'Points history', History], 
   ['/notifications', 'Notifications', Bell], 

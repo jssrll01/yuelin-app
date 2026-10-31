@@ -11,6 +11,12 @@ import Profile from './pages/Profile.jsx';
 import History from './pages/History.jsx';
 import RedeemCode from './pages/RedeemCode.jsx';
 import Exchange from './pages/Exchange.jsx';
+import Wishlist from './pages/Wishlist.jsx';
+import Missions from './pages/Missions.jsx';
+import Achievements from './pages/Achievements.jsx';
+import LeaderboardPage from './pages/LeaderboardPage.jsx';
+import Redemptions from './pages/Redemptions.jsx';
+import VipDashboard from './pages/VipDashboard.jsx';
 import CheckIn from './pages/CheckIn.jsx';
 import HomeDeal from './pages/deal/HomeDeal.jsx';
 import AboutDeal from './pages/deal/AboutDeal.jsx';
@@ -35,6 +41,12 @@ export default function App() {
         <Route path="/history" element={guard(<History />)} />
         <Route path="/redeem" element={guard(<RedeemCode />)} />
         <Route path="/exchange" element={guard(<Exchange />)} />
+        <Route path="/wishlist" element={guard(<Wishlist />)} />
+        <Route path="/missions" element={guard(<Missions />)} />
+        <Route path="/achievements" element={guard(<Achievements />)} />
+        <Route path="/leaderboard" element={guard(<LeaderboardPage />)} />
+        <Route path="/redemptions" element={guard(<Redemptions />)} />
+        <Route path="/vip-dashboard" element={guard(<VipDashboard />)} />
         <Route path="/checkin" element={guard(<CheckIn />)} />
         <Route path="/home-deal" element={<HomeDeal />} />
         <Route path="/about-deal" element={<AboutDeal />} />

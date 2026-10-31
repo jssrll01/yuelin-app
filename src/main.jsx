@@ -5,6 +5,7 @@ import App from './App.jsx';
 import { AuthProvider } from './auth.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import './index.css';
+import './v3.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode><BrowserRouter><ErrorBoundary><AuthProvider><App /></AuthProvider></ErrorBoundary></BrowserRouter></StrictMode>

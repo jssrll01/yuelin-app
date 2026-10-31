@@ -1,132 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { CheckCircle2, Clock, Target } from 'lucide-react';
+import { useAuth } from '../auth.jsx';
 import { supabase } from '../supabase';
-import { CheckCircle2, Target } from 'lucide-react';
-import { pts } from '../format.js';
+import { day, pts } from '../format.js';
+import { q } from '../lib/yl.js';
+import { Empty, PageSkeleton } from './Ui.jsx';
 
-export default function MissionList() {
-  const [missions, setMissions] = useState([]);
-  const [category, setCategory] = useState('daily');
-  const [loading, setLoading] = useState(true);
+export const MISSION_CATS = [['daily', 'Daily'], ['weekly', 'Weekly'], ['special', 'Special'], ['seasonal', 'Seasonal'], ['promotional', 'Promo']];
 
-  useEffect(() => {
-    async function loadMissions() {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+/** Reads real missions + the member's progress. Completion and rewards are decided by the backend; this only displays them. */
+export async function loadMissions(uidv) {
+  const m = await q(supabase.from('missions').select('*').eq('is_active', true).order('reward_points', { ascending: true }));
+  if (m.error) return { missing: m.missing, rows: [] };
+  const p = uidv ? await q(supabase.from('user_mission_progress').select('*').eq('user_id', uidv)) : { data: [] };
+  const now = Date.now();
+  const rows = (m.data || []).map((x) => {
+    const pr = (p.data || []).find((y) => y.mission_id === x.id);
+    const target = Number(x.target_count || 1);
+    const prog = pr ? Number(pr.current_count || 0) : 0;
+    const done = !!(pr && pr.is_completed);
+    const starts = x.starts_at ? new Date(x.starts_at).getTime() : null;
+    const ends = x.ends_at || x.expires_at ? new Date(x.ends_at || x.expires_at).getTime() : null;
+    const state = done ? 'done' : (ends && ends < now) ? 'expired' : (starts && starts > now) ? 'soon' : 'open';
+    return { ...x, target, prog, done, state, doneAt: pr && pr.completed_at, ends };
+  }).filter((x) => x.state !== 'expired' || x.done);
+  return { rows, missing: false };
+}
 
-      const { data: mData } = await supabase
-        .from('missions')
-        .select('*')
-        .eq('is_active', true)
-        .order('reward_points', { ascending: true });
-
-      if (user && mData) {
-        const { data: pData } = await supabase
-          .from('user_mission_progress')
-          .select('*')
-          .eq('user_id', user.id);
-
-        const merged = mData.map((m) => {
-          const prog = pData?.find((p) => p.mission_id === m.id);
-          return {
-            ...m,
-            progress: prog ? prog.current_count : 0,
-            is_completed: prog ? prog.is_completed : false,
-          };
-        });
-        setMissions(merged);
-      } else if (mData) {
-        setMissions(mData);
-      }
-      setLoading(false);
-    }
-    loadMissions();
-  }, []);
-
-  const filtered = missions.filter((m) => m.category === category);
-
+export function MissionCard({ m }) {
+  const pct = Math.min(100, Math.round((m.prog / m.target) * 100));
   return (
-    <div className="mt-10 mb-12 space-y-6">
-      <div className="px-1">
-         <h2 className="text-xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
-           <Target className="w-5 h-5 text-amber-500" /> Bonus Tasks
-         </h2>
-         <p className="text-slate-500 text-xs mt-1">Complete activities to earn extra points.</p>
+    <div className="card stack mis" style={{ gap: 10 }}>
+      <div className="row" style={{ alignItems: 'flex-start' }}>
+        {m.image_url ? <img className="rimg sm" src={m.image_url} alt="" loading="lazy" /> : <span className="ico"><Target size={20} /></span>}
+        <div style={{ flex: 1 }}><h3>{m.title}</h3>{m.description && <p className="dim small">{m.description}</p>}</div>
+        <span className="tagline gold">+{pts(m.reward_points || 0)}</span>
       </div>
-
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-1">
-        {['daily', 'weekly', 'special', 'seasonal'].map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setCategory(cat)}
-            className={`px-4 py-2 rounded-full capitalize font-bold text-xs whitespace-nowrap transition-all ${
-              category === cat
-                ? 'bg-slate-800 text-white shadow-md'
-                : 'bg-white text-slate-500 border border-slate-200 shadow-sm'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+      <div className="bar"><i style={{ width: Math.max(m.prog ? 4 : 0, pct) + '%' }} /></div>
+      <div className="row between small">
+        <span className="dim">{Math.min(m.prog, m.target)} / {m.target}</span>
+        {m.done ? <span className="tagline ok"><CheckCircle2 size={12} />Completed{m.doneAt ? ' · ' + day(m.doneAt) : ''}</span>
+          : m.state === 'soon' ? <span className="tagline gold">Starts {day(m.starts_at)}</span>
+          : m.ends ? <span className="dim"><Clock size={12} style={{ verticalAlign: '-2px' }} /> Ends {day(m.ends)}</span> : <span className="dim">In progress</span>}
       </div>
+    </div>
+  );
+}
 
-      {loading ? (
-        <div className="h-32 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      ) : filtered.length === 0 ? (
-        <p className="text-slate-400 py-8 text-center text-xs font-medium bg-slate-50 rounded-3xl border border-slate-100">
-          No active {category} tasks available.
-        </p>
-      ) : (
-        <div className="space-y-4">
-          {filtered.map((m) => {
-            const target = m.target_count || 1;
-            const progress = m.progress || 0;
-            const percent = Math.min(100, Math.round((progress / target) * 100));
-
-            return (
-              <div key={m.id} className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm flex flex-col gap-4">
-                <div className="flex justify-between items-start gap-4">
-                  <div>
-                    <h3 className="font-bold text-slate-800 text-sm">{m.title}</h3>
-                    <p className="text-slate-500 text-[11px] mt-1 leading-relaxed">{m.description}</p>
-                  </div>
-                  <span className="bg-amber-50 text-amber-600 font-extrabold px-3 py-1.5 rounded-xl text-[11px] whitespace-nowrap border border-amber-100">
-                    +{pts(m.reward_points || 50)}
-                  </span>
-                </div>
-
-                <div className="pt-2">
-                  <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">
-                    <span>Progress</span>
-                    <span className={m.is_completed ? 'text-emerald-500' : 'text-slate-600'}>
-                      {progress} / {target}
-                    </span>
-                  </div>
-                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all duration-500 rounded-full ${m.is_completed ? 'bg-emerald-400' : 'bg-amber-400'}`}
-                      style={{ width: `${percent}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-2 flex justify-end">
-                  {m.is_completed ? (
-                    <span className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-2xl font-bold text-xs border border-emerald-100">
-                      <CheckCircle2 className="w-4 h-4" /> Completed
-                    </span>
-                  ) : (
-                    <span className="text-slate-400 font-bold px-4 py-2 rounded-2xl text-xs bg-slate-50 border border-slate-100">
-                      In Progress
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+export default function MissionList({ limit, showTabs = true, initial = 'daily' }) {
+  const { session } = useAuth();
+  const [st, setSt] = useState(null);
+  const [cat, setCat] = useState(initial);
+  const uidv = session && session.user ? session.user.id : null;
+  useEffect(() => { let dead = false; loadMissions(uidv).then((r) => { if (!dead) setSt(r); }); return () => { dead = true; }; }, [uidv]);
+  if (!st) return <PageSkeleton variant="list" n={3} />;
+  if (st.missing) return <Empty icon={Target} title="Missions are coming soon" text="Check back shortly." />;
+  const rows = st.rows.filter((m) => !m.done || cat === 'done');
+  const shown = (showTabs ? (cat === 'done' ? st.rows.filter((m) => m.done) : rows.filter((m) => m.category === cat)) : rows.filter((m) => !m.done)).slice(0, limit || 99);
+  return (
+    <div className="stack" style={{ gap: 12 }}>
+      {showTabs && (
+        <div className="cats" role="tablist" aria-label="Mission categories">
+          {MISSION_CATS.map(([k, l]) => <button key={k} role="tab" aria-selected={cat === k} className={'cat' + (cat === k ? ' on' : '')} onClick={() => setCat(k)}>{l}</button>)}
+          <button role="tab" aria-selected={cat === 'done'} className={'cat' + (cat === 'done' ? ' on' : '')} onClick={() => setCat('done')}>History</button>
         </div>
       )}
+      {!shown.length && <Empty icon={Target} title={cat === 'done' ? 'No completed missions yet' : 'No missions right now'} text={cat === 'done' ? 'Complete a mission and it will be listed here.' : 'New missions appear here when they are active.'} />}
+      {shown.map((m) => <MissionCard key={m.id} m={m} />)}
+      {!showTabs && st.rows.length > shown.length && <Link to="/missions" className="btn sm" style={{ alignSelf: 'flex-start' }}>All missions</Link>}
     </div>
   );
 }

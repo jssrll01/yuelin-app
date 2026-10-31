@@ -7,6 +7,7 @@ import { peso, pts } from '../format.js';
 import { BRAND, CAMPAIGNS } from '../brand.js';
 import { catIcon, groupRewards, nextGoal } from '../lib/rewardsCat.js';
 import { PageSkeleton } from '../components/Ui.jsx';
+import HomeExtras from '../components/HomeExtras.jsx';
 
 const join = [['1', 'Create your account', 'Sign up free with your email and a few details.'], ['2', 'Redeem a code', 'Every YUÉLÍN pack can carry a code worth points.'], ['3', 'Exchange a reward', 'Pick something from the collection.']];
 const why = [
@@ -98,6 +99,8 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {session && rewards && <HomeExtras rewards={rewards} bal={bal} />}
 
       <section className="stack">
         <h2>What's on at {BRAND.name}</h2>
