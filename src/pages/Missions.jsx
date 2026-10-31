@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
-import { Award, CheckCircle2, Target, Zap } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { PageTitle, Spinner } from '../components/Ui.jsx';
 import { pts } from '../format.js';
 
