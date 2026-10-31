@@ -1,12 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Gem, Gift, PackageOpen } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Flame, Gem, Gift, LayoutGrid, PackageOpen, Target } from 'lucide-react';
 import { supabase } from '../supabase';
 import { useAuth } from '../auth.jsx';
 import { peso, pts, uid, when } from '../format.js';
 import { Empty, Msg, PageTitle, Spinner } from '../components/Ui.jsx';
+import { catIcon, groupRewards, nextGoal, soldOut } from '../lib/rewardsCat.js';
 
 export default function Exchange() {
   const { profile, refresh } = useAuth();
+  const [sp, setSp] = useSearchParams();
   const [rewards, setRewards] = useState(null);
   const [mine, setMine] = useState([]);
   const [pick, setPick] = useState(null);
@@ -22,8 +25,15 @@ export default function Exchange() {
     setRewards(a.data || []); setMine(b.data || []);
   }, []);
   useEffect(() => { load(); }, [load]);
+
+  const groups = useMemo(() => groupRewards(rewards || []), [rewards]);
   if (!rewards) return <Spinner />;
   const bal = Number(profile?.points || 0);
+  const sel = sp.get('c') || 'All';
+  const active = groups.some((g) => g.name === sel) ? sel : 'All';
+  const shown = active === 'All' ? groups : groups.filter((g) => g.name === active);
+  const goal = nextGoal(rewards, bal);
+  const setCat = (c) => { const n = new URLSearchParams(sp); if (c === 'All') n.delete('c'); else n.set('c', c); setSp(n, { replace: true }); };
 
   const open = (r) => { setErr(''); setOk(''); setPick({ r, key: uid() }); };
   const confirm = async () => {
@@ -41,25 +51,52 @@ export default function Exchange() {
     <div className="stack">
       <PageTitle icon={Gift} eyebrow="COLLECTION" title="Reward exchange" sub={'Your balance: ' + pts(bal) + ' points (' + peso(bal) + ')'} />
       <Msg>{err}</Msg><Msg kind="good">{ok}</Msg>
+
+      {goal && (
+        <div className="card stack" style={{ gap: 8 }}>
+          <div className="row"><span className="ico"><Target size={20} /></span>
+            <div style={{ flex: 1 }}><h3>Next up: {goal.name}</h3><p className="dim small">Only <b>{pts(goal.cost_points - bal)}</b> more points ({peso(goal.cost_points - bal)}) to unlock it.</p></div></div>
+          <div className="bar"><i style={{ width: Math.max(4, Math.min(100, (bal / goal.cost_points) * 100)) + '%' }} /></div>
+        </div>
+      )}
+
+      {rewards.length > 0 && (
+        <div className="cats" role="tablist" aria-label="Reward categories">
+          <button role="tab" aria-selected={active === 'All'} className={'cat' + (active === 'All' ? ' on' : '')} onClick={() => setCat('All')}><LayoutGrid size={16} />All <small>{rewards.length}</small></button>
+          {groups.map((g) => { const I = catIcon(g.name); return (
+            <button key={g.name} role="tab" aria-selected={active === g.name} className={'cat' + (active === g.name ? ' on' : '')} onClick={() => setCat(g.name)}><I size={16} />{g.name} <small>{g.items.length}</small></button>
+          ); })}
+        </div>
+      )}
+
       {!rewards.length && <Empty icon={Gem} title="The collection is being curated" text="New rewards will appear here soon." />}
-      <div className="grid2">
-        {rewards.map((r) => {
-          const out = r.stock !== null && r.stock <= 0;
-          const can = !out && bal >= r.cost_points;
-          return (
-            <div key={r.id} className="card stack" style={{ gap: 10 }}>
-              <div className="row"><span className="ico"><Gem size={22} /></span>
-                <div style={{ flex: 1 }}><h3>{r.name}</h3><p className="gold-text" style={{ fontWeight: 800 }}>{pts(r.cost_points)} pts <span className="dim small">({peso(r.cost_points)})</span></p></div></div>
-              {r.description && <p className="dim">{r.description}</p>}
-              <div className="bar" aria-label="Progress toward this reward"><i style={{ width: Math.min(100, (bal / r.cost_points) * 100) + '%' }} /></div>
-              <div className="row between">
-                <span className="dim small">{out ? 'Out of stock' : r.stock !== null ? r.stock + ' left' : 'Available'}</span>
-                <button className="btn gold sm" disabled={!can} onClick={() => open(r)}>{out ? 'Unavailable' : can ? 'Exchange' : 'Need ' + pts(r.cost_points - bal) + ' more'}</button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+
+      {shown.map((g) => { const I = catIcon(g.name); return (
+        <section key={g.name} className="stack" style={{ gap: 12 }}>
+          {(active === 'All' || shown.length > 1) && (
+            <div className="sec-h"><h2 className="row" style={{ gap: 8 }}><I size={20} className="gold-text" />{g.name}</h2><span className="dim small">from {pts(g.min)} pts</span></div>
+          )}
+          <div className="grid2 stag">
+            {g.items.map((r, i) => {
+              const out = soldOut(r);
+              const can = !out && bal >= r.cost_points;
+              const low = !out && r.stock !== null && r.stock !== undefined && r.stock <= 5;
+              return (
+                <div key={r.id} className="card lift stack" style={{ gap: 10, '--i': i }}>
+                  <div className="row"><span className="ico"><I size={22} /></span>
+                    <div style={{ flex: 1 }}><h3>{r.name}</h3><p className="gold-text" style={{ fontWeight: 800 }}>{pts(r.cost_points)} pts <span className="dim small">({peso(r.cost_points)})</span></p></div></div>
+                  {r.description && <p className="dim">{r.description}</p>}
+                  <div className="bar" aria-label="Progress toward this reward"><i style={{ width: Math.min(100, (bal / r.cost_points) * 100) + '%' }} /></div>
+                  <div className="row between">
+                    {out ? <span className="dim small">Out of stock</span> : low ? <span className="tagline hot"><Flame size={12} />Only {r.stock} left</span> : <span className="tagline ok">{r.stock !== null && r.stock !== undefined ? r.stock + ' left' : 'Available'}</span>}
+                    <button className={'btn gold sm' + (can ? ' pulse' : '')} disabled={!can} onClick={() => open(r)}>{out ? 'Unavailable' : can ? 'Exchange' : 'Need ' + pts(r.cost_points - bal) + ' more'}</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ); })}
 
       <h2>My exchanges</h2>
       {!mine.length && <Empty icon={PackageOpen} title="No exchanges yet" text="Your exchanged rewards and their status will be listed here." />}
@@ -76,7 +113,7 @@ export default function Exchange() {
 
       {pick && (
         <div className="modal" role="dialog" aria-modal="true">
-          <div className="card stack">
+          <div className="card stack route-in">
             <h2>Confirm exchange</h2>
             <p className="dim">Exchange <b>{pts(pick.r.cost_points)} points</b> for <b>{pick.r.name}</b>? Points are deducted immediately.</p>
             <div className="row"><button className="btn ghost" style={{ flex: 1 }} onClick={() => setPick(null)}>Cancel</button>
