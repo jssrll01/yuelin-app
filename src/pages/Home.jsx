@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabase';
-import { ArrowRight, Coins, Crown, Flame, Gift, ShieldCheck, Sparkles, Target, Ticket, Users, Zap } from 'lucide-react';
+import { ArrowRight, CalendarCheck, Coins, Crown, Flame, Gift, ShieldCheck, Sparkles, Target, Ticket, Users, Zap } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 import { peso, pts } from '../format.js';
 import { BRAND, CAMPAIGNS } from '../brand.js';
@@ -58,6 +58,7 @@ export default function Home() {
           {rewards && !goal && rewards.length > 0 && <p className="small"><Sparkles size={13} style={{ verticalAlign: '-2px' }} /> You can afford everything in the collection. Treat yourself!</p>}
           <div className="row" style={{ flexWrap: 'wrap' }}>
             <Link to="/redeem" className="btn gold sm"><Ticket size={14} />Redeem a code</Link>
+            <Link to="/checkin" className="btn sm"><CalendarCheck size={14} />Daily check-in</Link>
             <Link to="/exchange" className="btn sm">Rewards<ArrowRight size={14} /></Link>
           </div>
         </section>

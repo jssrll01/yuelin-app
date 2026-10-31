@@ -5,7 +5,7 @@ import { useAuth } from '../auth.jsx';
 import { peso, pts, when } from '../format.js';
 import { Empty, PageTitle, Spinner } from '../components/Ui.jsx';
 
-const label = { code: 'Code redeemed', exchange: 'Reward exchange', game_stake: 'Game stake', game_win: 'Game payout', vip_bonus: 'VIP bonus', referral: 'Referral reward' };
+const label = { code: 'Code redeemed', exchange: 'Reward exchange', game_stake: 'Game stake', game_win: 'Game payout', vip_bonus: 'VIP bonus', referral: 'Referral reward', checkin: 'Daily check-in' };
 
 export default function History() {
   const { profile } = useAuth();

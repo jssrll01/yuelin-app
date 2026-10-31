@@ -148,3 +148,10 @@ input, textarea {
 .cmp .v{background:rgba(184,134,11,.08);font-weight:800;color:var(--gold3)}
 .cta-band{text-align:center;padding:34px 20px;background:linear-gradient(145deg,#fff3cf,var(--bg) 75%);border:1px solid rgba(184,134,11,.25)}
 @media(prefers-reduced-motion:reduce){.btn,.card,.cat,.nav,.icon-btn{transition:none!important}.btn:hover:not(:disabled),.cat:hover,.card.lift:hover{transform:none!important}}
+
+.ci-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ci-day{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;background:var(--bg);box-shadow:var(--raise-sm);color:var(--gold3)}
+.ci-day.claimed{background:linear-gradient(135deg,#e6bf55,var(--gold) 60%,var(--gold3));color:#fff}
+.ci-day.today{box-shadow:0 0 0 2px var(--gold),var(--raise-sm)}
+.ci-day.locked{opacity:.55;box-shadow:var(--press)}
+@media(min-width:720px){.ci-grid{grid-template-columns:repeat(7,1fr)}}
