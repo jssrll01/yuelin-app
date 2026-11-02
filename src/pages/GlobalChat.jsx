@@ -18,53 +18,33 @@ export default function GlobalChat() {
   const { profile } = useAuth();
   const nav = useNavigate();
   const [messages, setMessages] = useState([]);
-  const [vipUsers, setVipUsers] = useState({}); 
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState('');
   const bottomRef = useRef(null);
 
-  // 1. Load Messages securely
   const loadMessages = async () => {
+    // No more joins, just simple select
     const { data, error } = await supabase
       .from('global_chat_messages')
-      .select('*, author:user_id(is_vip, tier)')
+      .select('*')
       .order('created_at', { ascending: true })
       .limit(100);
     
-    if (!error && data) {
-      setMessages(data);
-      const cache = {};
-      data.forEach(m => {
-        cache[m.user_id] = m.author?.is_vip || m.author?.tier === 'vip';
-      });
-      setVipUsers(cache);
-    }
+    if (!error && data) setMessages(data);
     setLoading(false);
   };
 
-  // 2. Realtime Subscription (Fixed: Dependency array is now empty so it doesn't disconnect)
   useEffect(() => {
     loadMessages();
 
     const channel = supabase
       .channel('global_chat_room')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'global_chat_messages' }, async (payload) => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'global_chat_messages' }, (payload) => {
         const newMsg = payload.new;
-        
-        // Fetch VIP status once per user
-        setVipUsers(prev => {
-          if (prev[newMsg.user_id] !== undefined) return prev;
-          supabase.from('profiles').select('is_vip, tier').eq('id', newMsg.user_id).single().then(({ data }) => {
-            if (data) setVipUsers(current => ({ ...current, [newMsg.user_id]: data.is_vip || data.tier === 'vip' }));
-          });
-          return prev;
-        });
-
         setMessages((prev) => {
           if (prev.find(m => m.id === newMsg.id)) return prev;
-          // If we receive our own optimistic message from DB, remove the temp one
           const filtered = prev.filter(m => !m.id.startsWith('temp-') || m.message !== newMsg.message);
           return [...filtered, newMsg];
         });
@@ -75,7 +55,7 @@ export default function GlobalChat() {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []); // <--- CRUCIAL FIX: Empty array means it won't unmount/reload endlessly
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -100,7 +80,7 @@ export default function GlobalChat() {
       username: profile.username,
       message: tempText,
       created_at: new Date().toISOString(),
-      author: { is_vip: isMeVip, tier: profile?.tier }
+      sender_is_vip: isMeVip
     };
 
     setMessages(prev => [...prev, optimisticMsg]);
@@ -130,7 +110,6 @@ export default function GlobalChat() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: 'var(--bg)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', padding: '16px', borderBottom: '1px solid var(--line)', background: 'var(--bg)' }}>
         <button onClick={() => nav('/')} style={{ background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
           <ArrowLeft size={20} />
@@ -141,7 +120,6 @@ export default function GlobalChat() {
         </div>
       </div>
 
-      {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
         {loading ? (
           <div style={{ textAlign: 'center', marginTop: 40, color: 'var(--dim)' }}>Loading messages...</div>
@@ -154,7 +132,7 @@ export default function GlobalChat() {
           messages.map((m, i) => {
             const isMine = m.user_id === profile?.id;
             const isConsecutive = i > 0 && messages[i - 1].user_id === m.user_id;
-            const isVip = m.author?.is_vip || m.author?.tier === 'vip' || vipUsers[m.user_id];
+            const isVip = m.sender_is_vip; // Directly from DB!
 
             return (
               <div key={m.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: isMine ? 'flex-end' : 'flex-start' }}>
@@ -189,7 +167,6 @@ export default function GlobalChat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
       <div style={{ padding: '0 16px 16px 16px' }}>
         {err && <p style={{ color: 'red', fontSize: 12, marginBottom: 8, textAlign: 'center' }}>{err}</p>}
         <form onSubmit={submit} style={{ display: 'flex', alignItems: 'flex-end', gap: 12 }}>

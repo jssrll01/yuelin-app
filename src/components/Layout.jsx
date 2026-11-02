@@ -19,6 +19,7 @@ export default function Layout() {
   const close = useCallback(() => setOpen(false), []);
   return (
     <div className="app">
+      {!isChat && (
       <header className="top">
         <div className="top-in">
           <div className="row" style={{ gap: 10 }}>
@@ -30,14 +31,15 @@ export default function Layout() {
             <Link to="/notifications" className="icon-btn" aria-label="Notifications">
               <Bell size={20} />{unread > 0 && <span className="dot">{unread > 9 ? '9+' : unread}</span>}
             </Link>
-            <Link to="/global-chat" className="icon-btn" aria-label="Global Chat" style={{ marginRight: 8 }}><MessageSquare size={18} /></Link>
+            <Link to="/global-chat" className="icon-btn" aria-label="Global Chat" ><MessageSquare size={18} /></Link>
 <Link to="/profile" className="icon-btn" aria-label="Profile"><User size={20} /></Link>
           </div>
         </div>
       </header>
+      )}
       <Menu open={open} onClose={close} />
       <main className="page"><div key={loc.pathname} className="route-in"><Outlet /></div></main>
-      {session && (
+      {session && !isChat && (
         <nav className="bottom" aria-label="Main">
           <div className="bottom-in">
             {tabs.map(([to, label, Icon]) => (
