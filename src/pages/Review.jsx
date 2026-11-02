@@ -21,7 +21,6 @@ async function upload(file) {
   return j.secure_url;
 }
 
-// Whole stars only now
 function Stars({ value, onChange, size = 30 }) {
   return (
     <div className="row" style={{ gap: 2 }} role="group" aria-label="Rating">
@@ -74,7 +73,6 @@ export default function Review() {
   const [err, setErr] = useState('');
 
   const load = async () => {
-    // Fetch ALL reviews. The new RLS policy allows this.
     const { data } = await supabase.from('member_reviews').select('*').order('created_at', { ascending: false });
     setReviews(data || []);
   };
@@ -85,7 +83,6 @@ export default function Review() {
 
   if (reviews === undefined) return <Spinner />;
 
-  // Find my review and separate the global feed
   const myId = session?.user?.id;
   const mine = reviews.find(r => r.user_id === myId);
   const others = reviews.filter(r => r.user_id !== myId);
@@ -120,8 +117,7 @@ export default function Review() {
     <div className="stack" style={{ paddingBottom: 40 }}>
       <PageTitle icon={Star} eyebrow="REVIEWS" title="Community Reviews" sub="Read what others are saying, or write your own to unlock rewards." />
 
-      {/* My Section */}
-      <h3 style={{ marginTop: 16, marginBottom: 8 }}>Your Review</h3>
+      <h3 style={{ marginTop: 12, marginBottom: 4, fontSize: 16 }}>Your Review</h3>
       {mine ? (
         <div className="stack">
           <ReviewCard review={mine} isMine={true} />
@@ -130,38 +126,51 @@ export default function Review() {
           </div>
         </div>
       ) : (
-        <form className="card stack" onSubmit={submit}>
-          <p className="dim small">Required before your first redemption. One review per account, and it can't be edited later.</p>
+        <form className="card stack" onSubmit={submit} style={{ gap: 12, padding: 16 }}>
+          <p className="dim small" style={{ margin: 0 }}>Required before your first redemption. One review per account, and it can't be edited later.</p>
           <Msg>{err}</Msg>
-          <div className="field">
-            <label>Your rating</label>
-            <Stars value={rating} onChange={setRating} />
-            <p className="dim small">{rating ? rating + ' / 5' : 'Tap a star'}{rating === 5 ? ' · earns 30 bonus points' : ''}</p>
+          
+          <div className="row between" style={{ alignItems: 'center' }}>
+            <label style={{ fontSize: 13, fontWeight: 600 }}>Rating</label>
+            <Stars value={rating} onChange={setRating} size={24} />
           </div>
-          <div className="field">
-            <label htmlFor="rv">Your review</label>
-            <div className="input">
-              <textarea id="rv" rows={4} maxLength={1000} value={body} onChange={(e) => setBody(e.target.value)} style={{ flex: 1, padding: '12px 0', background: 'none', border: 0, color: 'inherit', font: 'inherit', outline: 'none' }} placeholder="Tell us about your experience" />
-            </div>
+
+          <div className="input" style={{ padding: '8px 12px' }}>
+            <textarea 
+              rows={2} 
+              maxLength={1000} 
+              value={body} 
+              onChange={(e) => setBody(e.target.value)} 
+              style={{ width: '100%', padding: 0, background: 'none', border: 0, color: 'inherit', font: 'inherit', outline: 'none', resize: 'none', fontSize: 14 }} 
+              placeholder="Tell us about your experience..." 
+            />
           </div>
-          <div className="field">
-            <label>Photos ({files.length}/5, all 5 required)</label>
-            <div className="grid3">
+
+          <div>
+            <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 8 }}>Photos ({files.length}/5)</label>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {previews.map((u, i) => (
-                <div key={u} style={{ position: 'relative' }}>
-                  <img className="rimg" src={u} alt="" />
-                  <button type="button" className="icon-btn" aria-label="Remove photo" style={{ position: 'absolute', top: 4, right: 4, width: 30, height: 30 }} onClick={() => setFiles((c) => c.filter((_, k) => k !== i))}><X size={14} /></button>
+                <div key={u} style={{ position: 'relative', width: 64, height: 64 }}>
+                  <img src={u} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
+                  <button type="button" onClick={() => setFiles((c) => c.filter((_, k) => k !== i))} style={{ position: 'absolute', top: -6, right: -6, background: '#333', color: '#fff', border: 0, borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><X size={12} /></button>
                 </div>
               ))}
-              {files.length < 5 && <label className="rimg ph" style={{ cursor: 'pointer' }}><Camera size={26} /><input type="file" accept="image/*" multiple hidden onChange={addFiles} /></label>}
+              {files.length < 5 && (
+                <label style={{ width: 64, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', border: '1px dashed var(--line)', borderRadius: 8, cursor: 'pointer' }}>
+                  <Camera size={20} className="dim" />
+                  <input type="file" accept="image/*" multiple hidden onChange={addFiles} />
+                </label>
+              )}
             </div>
           </div>
-          <button className="btn gold block" disabled={busy}>{busy ? 'Uploading and saving…' : 'Submit review'}</button>
+          
+          <button className="btn gold block" disabled={busy} style={{ marginTop: 4 }}>
+            {busy ? 'Uploading and saving…' : 'Submit review'}
+          </button>
         </form>
       )}
 
-      {/* Global Feed Section */}
-      <h3 style={{ marginTop: 32, marginBottom: 8 }}>Recent Reviews</h3>
+      <h3 style={{ marginTop: 32, marginBottom: 8, fontSize: 16 }}>Recent Reviews</h3>
       {others.length === 0 ? (
         <p className="dim">No other reviews yet.</p>
       ) : (
