@@ -26,21 +26,17 @@ export default function GlobalChat() {
   
   const scrollContainerRef = useRef(null);
 
-  // 1. Fetch VIP users directly from the tables on load
   const fetchVips = async () => {
     const vips = new Set();
-    
-    // Check vip_memberships table (assuming it has user_id)
     try {
       const { data: memberships } = await supabase.from('vip_memberships').select('user_id');
       memberships?.forEach(m => vips.add(m.user_id));
-    } catch (e) { console.log('vip_memberships error', e); }
+    } catch (e) { console.log(e); }
 
-    // Also check profiles table just in case
     try {
       const { data: profiles } = await supabase.from('profiles').select('id').or('is_vip.eq.true, tier.eq.vip');
       profiles?.forEach(p => vips.add(p.id));
-    } catch (e) { console.log('profiles error', e); }
+    } catch (e) { console.log(e); }
 
     setVipUsers(vips);
   };
@@ -102,7 +98,7 @@ export default function GlobalChat() {
       username: profile.username,
       message: tempText,
       created_at: new Date().toISOString(),
-      sender_is_vip: vipUsers.has(profile.id) // Use the live VIP list
+      sender_is_vip: vipUsers.has(profile.id)
     };
 
     setMessages(prev => [...prev, optimisticMsg]);
@@ -131,9 +127,8 @@ export default function GlobalChat() {
   const charCount = Array.from(text).length;
 
   return (
-    <div style={{ height: '100dvh', background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ height: '100dvh', background: 'var(--bg)', position: 'relative' }}>
       
-      {/* Animation CSS */}
       <style>
         {`
           @keyframes vipGlow {
@@ -141,25 +136,24 @@ export default function GlobalChat() {
             50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.8), inset 0 0 15px rgba(212, 175, 55, 0.3); }
             100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.4), inset 0 0 5px rgba(212, 175, 55, 0.1); }
           }
-          .vip-bubble {
-            animation: vipGlow 3s infinite;
-          }
+          .vip-bubble { animation: vipGlow 3s infinite; }
         `}
       </style>
 
-      {/* Floating Header with Text */}
+      {/* FIXED Header */}
       <div style={{ 
-        position: 'absolute', top: 16, left: 16, right: 16, zIndex: 10,
-        display: 'flex', alignItems: 'center', gap: 12, pointerEvents: 'none'
+        position: 'fixed', top: 0, left: 0, right: 0, height: 72, zIndex: 50,
+        display: 'flex', alignItems: 'center', gap: 12, padding: '16px',
+        background: 'var(--bg)' // Solid background to hide scrolling text underneath
       }}>
         <button onClick={() => nav('/')} style={{ 
           background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 44, height: 44, 
           display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', 
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)', pointerEvents: 'auto' 
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
         }}>
           <ArrowLeft size={20} />
         </button>
-        <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', pointerEvents: 'auto' }}>
+        <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>
           Global Chat
         </span>
       </div>
@@ -168,7 +162,9 @@ export default function GlobalChat() {
       <div 
         ref={scrollContainerRef}
         style={{ 
-          height: '100%', overflowY: 'auto', padding: '80px 16px 100px 16px', 
+          height: '100%', 
+          overflowY: 'auto', 
+          padding: '80px 16px 100px 16px', // Padding top and bottom to avoid fixed headers
           display: 'flex', flexDirection: 'column', gap: 16 
         }}
       >
@@ -183,7 +179,6 @@ export default function GlobalChat() {
           messages.map((m, i) => {
             const isMine = m.user_id === profile?.id;
             const isConsecutive = i > 0 && messages[i - 1].user_id === m.user_id;
-            // Check live VIP list first, fallback to database flag
             const isVip = vipUsers.has(m.user_id) || m.sender_is_vip === true; 
 
             return (
@@ -217,9 +212,9 @@ export default function GlobalChat() {
         )}
       </div>
 
-      {/* Floating Input Area */}
+      {/* FIXED Input Area */}
       <div style={{ 
-        position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 10,
+        position: 'fixed', bottom: 16, left: 16, right: 16, zIndex: 50,
         background: 'var(--surface)', padding: '8px 12px', borderRadius: 30,
         boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
         display: 'flex', alignItems: 'center', gap: 12
