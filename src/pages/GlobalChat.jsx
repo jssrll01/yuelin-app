@@ -26,7 +26,7 @@ export default function GlobalChat() {
   
   const scrollContainerRef = useRef(null);
 
-  // Prevent background page from scrolling while in chat
+  // Lock the background page
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'auto'; };
@@ -133,25 +133,25 @@ export default function GlobalChat() {
   const charCount = Array.from(text).length;
 
   return (
-    // The outer container is fixed to the screen and uses Flexbox column
+    // The fixed wrapper ensures we ignore any parent padding/height
     <div style={{ 
       position: 'fixed', 
       top: 0, left: 0, right: 0, bottom: 0, 
-      zIndex: 9999, 
-      display: 'flex', 
-      flexDirection: 'column', 
+      zIndex: 99999, 
       background: 'var(--bg)' 
     }}>
       
-      {/* 1. HEADER (Fixed Height, Never Shrinks) */}
+      {/* 1. TOP HEADER (Absolutely positioned to top) */}
       <div style={{ 
-        flexShrink: 0, 
+        position: 'absolute', 
+        top: 0, left: 0, right: 0, 
         height: 64, 
         display: 'flex', 
         alignItems: 'center', 
         padding: '0 16px', 
         background: 'var(--bg)', 
-        borderBottom: '1px solid var(--line)' 
+        borderBottom: '1px solid var(--line)',
+        zIndex: 10
       }}>
         <button onClick={() => nav('/')} style={{ 
           background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 40, height: 40, 
@@ -165,12 +165,14 @@ export default function GlobalChat() {
         </span>
       </div>
 
-      {/* 2. MESSAGES (Flex: 1 takes up remaining space, Scrolls internally) */}
+      {/* 2. MESSAGES AREA (Constrained perfectly between header and input) */}
       <div 
         ref={scrollContainerRef}
         style={{ 
-          flex: 1, 
-          minHeight: 0, // Crucial fix for flexbox scrolling
+          position: 'absolute', 
+          top: 64, // Below header
+          bottom: 80, // Above input
+          left: 0, right: 0, 
           overflowY: 'auto', 
           padding: '16px', 
           display: 'flex', 
@@ -204,6 +206,7 @@ export default function GlobalChat() {
                   </span>
                 )}
                 
+                {/* Normal standard bubble for everyone (No dark VIP box) */}
                 <div style={{ 
                   background: isMine ? '#d4af37' : '#e2e8f0', 
                   color: isMine ? '#000' : '#1a202c',
@@ -222,15 +225,20 @@ export default function GlobalChat() {
         )}
       </div>
 
-      {/* 3. INPUT (Fixed Height, Never Shrinks) */}
+      {/* 3. BOTTOM INPUT (Absolutely positioned to bottom) */}
       <div style={{ 
-        flexShrink: 0, 
-        padding: '16px', 
-        paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
-        background: 'var(--bg)',
-        borderTop: '1px solid var(--line)'
+        position: 'absolute', 
+        bottom: 0, left: 0, right: 0, 
+        height: 80, 
+        display: 'flex', 
+        alignItems: 'center', 
+        padding: '0 16px', 
+        background: 'var(--bg)', 
+        borderTop: '1px solid var(--line)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        zIndex: 10
       }}>
-        {err && <p style={{ color: 'red', fontSize: 12, marginBottom: 8, textAlign: 'center' }}>{err}</p>}
+        {err && <p style={{ position: 'absolute', top: -24, left: 0, right: 0, color: 'red', fontSize: 12, textAlign: 'center' }}>{err}</p>}
         
         <form onSubmit={submit} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
           <div style={{ flex: 1, background: 'var(--surface)', borderRadius: 24, padding: '8px 16px', display: 'flex', alignItems: 'center' }}>
