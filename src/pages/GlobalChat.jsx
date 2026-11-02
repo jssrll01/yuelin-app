@@ -215,6 +215,26 @@ export default function GlobalChat() {
           </div>
         ) : (
           messages.map((m, i) => {
+            // Render System Message Distinctly
+            if (m.username === 'System') {
+              return (
+                <div key={m.id || i} style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
+                  <div style={{ 
+                    background: 'var(--surface)', 
+                    color: 'var(--dim)', 
+                    padding: '10px 16px', 
+                    borderRadius: 20, 
+                    fontSize: 13, 
+                    textAlign: 'center',
+                    border: '1px solid var(--line)',
+                    maxWidth: '90%'
+                  }}>
+                    {m.message}
+                  </div>
+                </div>
+              );
+            }
+
             const isMine = m.user_id === profile?.id;
             const isConsecutive = i > 0 && messages[i - 1].user_id === m.user_id;
             const isVip = vipUsers.has(m.user_id) || m.sender_is_vip === true; 
