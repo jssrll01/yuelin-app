@@ -81,6 +81,7 @@ export default function GlobalChat() {
   }, []);
 
   useEffect(() => {
+    window.dispatchEvent(new Event('chat-read')); // Clear the red dot
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }

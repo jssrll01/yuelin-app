@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Bell, Coins, Crown, Dices, Gift, Home, Menu as MenuIcon, Ticket, User, Users , MessageSquare } from 'lucide-react';
+import { supabase } from '../supabase';
 import { useAuth } from '../auth.jsx';
 import { pts } from '../format.js';
 import InstallPrompt from './InstallPrompt.jsx';
@@ -13,6 +14,35 @@ export default function Layout() {
   const location = useLocation();
   const isChat = location.pathname === '/global-chat';
   const { session, profile, unread } = useAuth();
+
+  const [hasUnreadChat, setHasUnreadChat] = useState(() => localStorage.getItem('unread_chat') === 'true');
+  
+  useEffect(() => {
+    // Listen for Realtime Messages globally
+    const channel = supabase
+      .channel('global_chat_unread')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'global_chat_messages' }, (payload) => {
+        // Only show dot if NOT on the chat page, NOT my message, and NOT a system message
+        if (location.pathname !== '/global-chat' && payload.new.user_id !== profile?.id && payload.new.username !== 'System') {
+          setHasUnreadChat(true);
+          localStorage.setItem('unread_chat', 'true');
+        }
+      })
+      .subscribe();
+
+    // Listen for custom event to clear the dot when user opens chat
+    const handleClear = () => {
+      setHasUnreadChat(false);
+      localStorage.removeItem('unread_chat');
+    };
+    window.addEventListener('chat-read', handleClear);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener('chat-read', handleClear);
+    };
+  }, [location.pathname, profile?.id]);
+
   const loc = useLocation();
   useRefCapture();
   const [open, setOpen] = useState(false);
