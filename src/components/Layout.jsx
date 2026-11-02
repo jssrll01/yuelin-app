@@ -38,7 +38,7 @@ export default function Layout() {
       </header>
       )}
       <Menu open={open} onClose={close} />
-      <main className="page"><div key={loc.pathname} className="route-in"><Outlet /></div></main>
+      <main className="page" style={isChat ? { padding: 0, height: '100dvh', overflow: 'hidden' } : {}}><div key={loc.pathname} className="route-in" style={isChat ? { transform: 'none', height: '100%' } : {}}><Outlet /></div></main>
       {session && !isChat && (
         <nav className="bottom" aria-label="Main">
           <div className="bottom-in">

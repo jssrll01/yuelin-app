@@ -26,24 +26,16 @@ export default function GlobalChat() {
   
   const scrollContainerRef = useRef(null);
 
-  // Lock the background page
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'auto'; };
-  }, []);
-
   const fetchVips = async () => {
     const vips = new Set();
     try {
       const { data: memberships } = await supabase.from('vip_memberships').select('user_id');
       memberships?.forEach(m => vips.add(m.user_id));
     } catch (e) { console.log(e); }
-
     try {
       const { data: profiles } = await supabase.from('profiles').select('id').or('is_vip.eq.true, tier.eq.vip');
       profiles?.forEach(p => vips.add(p.id));
     } catch (e) { console.log(e); }
-
     setVipUsers(vips);
   };
 
@@ -133,25 +125,22 @@ export default function GlobalChat() {
   const charCount = Array.from(text).length;
 
   return (
-    // The fixed wrapper ensures we ignore any parent padding/height
+    // Now that parents have 100dvh and no transform, this Flexbox works perfectly
     <div style={{ 
-      position: 'fixed', 
-      top: 0, left: 0, right: 0, bottom: 0, 
-      zIndex: 99999, 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column', 
       background: 'var(--bg)' 
     }}>
       
-      {/* 1. TOP HEADER (Absolutely positioned to top) */}
+      {/* HEADER */}
       <div style={{ 
-        position: 'absolute', 
-        top: 0, left: 0, right: 0, 
+        flexShrink: 0, 
         height: 64, 
         display: 'flex', 
         alignItems: 'center', 
         padding: '0 16px', 
-        background: 'var(--bg)', 
-        borderBottom: '1px solid var(--line)',
-        zIndex: 10
+        borderBottom: '1px solid var(--line)' 
       }}>
         <button onClick={() => nav('/')} style={{ 
           background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 40, height: 40, 
@@ -165,14 +154,12 @@ export default function GlobalChat() {
         </span>
       </div>
 
-      {/* 2. MESSAGES AREA (Constrained perfectly between header and input) */}
+      {/* MESSAGES (Takes remaining space) */}
       <div 
         ref={scrollContainerRef}
         style={{ 
-          position: 'absolute', 
-          top: 64, // Below header
-          bottom: 80, // Above input
-          left: 0, right: 0, 
+          flex: 1, 
+          minHeight: 0, // Forces it to respect the flex bounds
           overflowY: 'auto', 
           padding: '16px', 
           display: 'flex', 
@@ -206,7 +193,6 @@ export default function GlobalChat() {
                   </span>
                 )}
                 
-                {/* Normal standard bubble for everyone (No dark VIP box) */}
                 <div style={{ 
                   background: isMine ? '#d4af37' : '#e2e8f0', 
                   color: isMine ? '#000' : '#1a202c',
@@ -225,20 +211,14 @@ export default function GlobalChat() {
         )}
       </div>
 
-      {/* 3. BOTTOM INPUT (Absolutely positioned to bottom) */}
+      {/* COMPOSER (Fixed Height at bottom) */}
       <div style={{ 
-        position: 'absolute', 
-        bottom: 0, left: 0, right: 0, 
-        height: 80, 
-        display: 'flex', 
-        alignItems: 'center', 
-        padding: '0 16px', 
-        background: 'var(--bg)', 
-        borderTop: '1px solid var(--line)',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-        zIndex: 10
+        flexShrink: 0, 
+        padding: '16px', 
+        paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
+        borderTop: '1px solid var(--line)'
       }}>
-        {err && <p style={{ position: 'absolute', top: -24, left: 0, right: 0, color: 'red', fontSize: 12, textAlign: 'center' }}>{err}</p>}
+        {err && <p style={{ color: 'red', fontSize: 12, marginBottom: 8, textAlign: 'center' }}>{err}</p>}
         
         <form onSubmit={submit} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
           <div style={{ flex: 1, background: 'var(--surface)', borderRadius: 24, padding: '8px 16px', display: 'flex', alignItems: 'center' }}>
@@ -260,7 +240,6 @@ export default function GlobalChat() {
           </div>
         </form>
       </div>
-
     </div>
   );
 }
