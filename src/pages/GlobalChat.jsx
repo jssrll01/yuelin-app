@@ -26,16 +26,24 @@ export default function GlobalChat() {
   
   const scrollContainerRef = useRef(null);
 
+  // Lock body scroll when chat is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'auto'; };
+  }, []);
+
   const fetchVips = async () => {
     const vips = new Set();
     try {
       const { data: memberships } = await supabase.from('vip_memberships').select('user_id');
       memberships?.forEach(m => vips.add(m.user_id));
     } catch (e) { console.log(e); }
+
     try {
       const { data: profiles } = await supabase.from('profiles').select('id').or('is_vip.eq.true, tier.eq.vip');
       profiles?.forEach(p => vips.add(p.id));
     } catch (e) { console.log(e); }
+
     setVipUsers(vips);
   };
 
@@ -125,22 +133,22 @@ export default function GlobalChat() {
   const charCount = Array.from(text).length;
 
   return (
-    // Now that parents have 100dvh and no transform, this Flexbox works perfectly
     <div style={{ 
-      height: '100%', 
-      display: 'flex', 
-      flexDirection: 'column', 
-      background: 'var(--bg)' 
+      height: '100dvh', 
+      display: 'grid', 
+      gridTemplateRows: '64px minmax(0, 1fr) auto', 
+      background: 'var(--bg)',
+      overflow: 'hidden' 
     }}>
       
-      {/* HEADER */}
+      {/* 1. HEADER ROW */}
       <div style={{ 
-        flexShrink: 0, 
-        height: 64, 
         display: 'flex', 
         alignItems: 'center', 
         padding: '0 16px', 
-        borderBottom: '1px solid var(--line)' 
+        borderBottom: '1px solid var(--line)',
+        background: 'var(--bg)',
+        zIndex: 10
       }}>
         <button onClick={() => nav('/')} style={{ 
           background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 40, height: 40, 
@@ -154,13 +162,13 @@ export default function GlobalChat() {
         </span>
       </div>
 
-      {/* MESSAGES (Takes remaining space) */}
+      {/* 2. MESSAGES ROW (Scrollable) */}
       <div 
         ref={scrollContainerRef}
         style={{ 
-          flex: 1, 
-          minHeight: 0, // Forces it to respect the flex bounds
+          minHeight: 0, 
           overflowY: 'auto', 
+          overscrollBehavior: 'contain',
           padding: '16px', 
           display: 'flex', 
           flexDirection: 'column', 
@@ -211,35 +219,72 @@ export default function GlobalChat() {
         )}
       </div>
 
-      {/* COMPOSER (Fixed Height at bottom) */}
+      {/* 3. COMPOSER ROW (Fixed at bottom) */}
       <div style={{ 
-        flexShrink: 0, 
-        padding: '16px', 
-        paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
-        borderTop: '1px solid var(--line)'
+        padding: '12px 16px', 
+        paddingBottom: 'calc(12px + env(safe-area-inset-bottom))',
+        borderTop: '1px solid var(--line)',
+        background: 'var(--bg)',
+        zIndex: 10
       }}>
         {err && <p style={{ color: 'red', fontSize: 12, marginBottom: 8, textAlign: 'center' }}>{err}</p>}
         
         <form onSubmit={submit} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
-          <div style={{ flex: 1, background: 'var(--surface)', borderRadius: 24, padding: '8px 16px', display: 'flex', alignItems: 'center' }}>
+          
+          {/* Neumorphic Input Pill */}
+          <div style={{ 
+            flex: 1, 
+            background: 'var(--bg)', 
+            borderRadius: 24, 
+            padding: '8px 16px', 
+            display: 'flex', 
+            alignItems: 'center',
+            boxShadow: 'inset 4px 4px 10px #c8c8c8, inset -4px -4px 10px #ffffff' 
+          }}>
             <textarea
-              rows={1} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} placeholder="Message everyone..."
-              style={{ width: '100%', background: 'none', border: 0, color: 'inherit', font: 'inherit', outline: 'none', resize: 'none', padding: '8px 0', maxHeight: 100 }}
+              rows={1} 
+              value={text} 
+              onChange={(e) => setText(e.target.value)} 
+              onKeyDown={handleKeyDown} 
+              placeholder="Message everyone..."
+              style={{ 
+                width: '100%', 
+                background: 'none', 
+                border: 0, 
+                color: 'var(--text)', 
+                font: 'inherit', 
+                outline: 'none', 
+                resize: 'none', 
+                padding: '4px 0', 
+                maxHeight: 100 
+              }}
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-             <span style={{ fontSize: 10, color: 'var(--dim)' }}>{charCount}/5000</span>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+             <span style={{ fontSize: 10, color: 'var(--dim)', fontWeight: 500 }}>{charCount}/5000</span>
+             
+             {/* Neumorphic Send Button */}
              <button type="submit" disabled={sending || !text.trim() || charCount > 5000} style={{ 
-               background: 'var(--bg)', border: 'none', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-               boxShadow: '2px 2px 8px #c8c8c8, -2px -2px 8px #ffffff',
+               background: 'var(--bg)', 
+               border: 'none', 
+               width: 44, 
+               height: 44, 
+               borderRadius: '50%', 
+               display: 'flex', 
+               alignItems: 'center', 
+               justifyContent: 'center',
+               boxShadow: '4px 4px 10px #c8c8c8, -4px -4px 10px #ffffff',
                cursor: sending || !text.trim() || charCount > 5000 ? 'not-allowed' : 'pointer',
-               color: sending || !text.trim() || charCount > 5000 ? 'var(--dim)' : '#d4af37'
+               color: sending || !text.trim() || charCount > 5000 ? 'var(--dim)' : '#d4af37',
+               transition: 'all 0.2s'
              }}>
-               <Send size={16} style={{ marginLeft: -2, marginTop: 2 }} />
+               <Send size={18} style={{ marginLeft: -2, marginTop: 2 }} />
              </button>
           </div>
         </form>
       </div>
+
     </div>
   );
 }
