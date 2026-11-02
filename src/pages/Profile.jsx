@@ -15,13 +15,13 @@ export default function Profile() {
   const [err, setErr] = useState('');
   const [ok, setOk] = useState('');
   const [busy, setBusy] = useState(false);
-  useEffect(() => { if (profile) setF({ first_name: profile.first_name, last_name: profile.last_name, phone: profile.phone, province: profile.province, city: profile.city, barangay: profile.barangay }); }, [profile]);
+  useEffect(() => { if (profile) setF({ first_name: profile.first_name, last_name: profile.last_name, phone: profile.phone }); }, [profile]);
   if (!profile || !f) return <Spinner />;
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
 
   const save = async (e) => {
     e.preventDefault(); setErr(''); setOk('');
-    if (!f.first_name.trim() || !f.last_name.trim() || !f.province.trim() || !f.city.trim() || !f.barangay.trim()) return setErr('Please fill in every field.');
+    if (!f.first_name.trim() || !f.last_name.trim()) return setErr('Please fill in every field.');
     if (!phoneOk(f.phone)) return setErr('Enter a valid phone number.');
     setBusy(true);
     const { error } = await supabase.from('profiles').update({ ...f, phone: cleanPhone(f.phone) }).eq('id', profile.id);
@@ -39,7 +39,7 @@ export default function Profile() {
 
   return (
     <div className="stack">
-      <PageTitle icon={User} eyebrow="MEMBER" title={profile.first_name + ' ' + profile.last_name} sub={'@' + profile.username + ' · Member since ' + when(profile.created_at).split(',')[0]} />
+      <PageTitle icon={User} eyebrow={profile?.is_vip || profile?.tier === "vip" ? "VIP MEMBER" : "MEMBER"} title={profile.first_name + ' ' + profile.last_name} sub={'@' + profile.username + ' · Member since ' + when(profile.created_at).split(',')[0]} />
       <div className="card wallet row between">
         <div><p className="eyebrow">BALANCE</p><p className="big gold-text">{pts(profile.points)}</p><p className="dim">{peso(profile.points)}</p></div>
         <button className="btn sm" onClick={() => nav('/history')}><History size={16} />History</button>
@@ -56,11 +56,6 @@ export default function Profile() {
           <Field label="Last name" icon={User} value={f.last_name} onChange={set('last_name')} />
         </div>
         <Field label="Phone number" icon={Phone} type="tel" value={f.phone} onChange={set('phone')} />
-        <Field label="Province" icon={MapPin} value={f.province} onChange={set('province')} />
-        <div className="grid2">
-          <Field label="City / Municipality" icon={Building2} value={f.city} onChange={set('city')} />
-          <Field label="Barangay" icon={Home} value={f.barangay} onChange={set('barangay')} />
-        </div>
         <button className="btn gold" disabled={busy}><Save size={18} />{busy ? 'Saving…' : 'Save changes'}</button>
       </form>
       <div className="card stack">

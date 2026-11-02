@@ -8,7 +8,7 @@ import { Field, Msg } from '../components/Ui.jsx';
 import BackButton from '../components/BackButton.jsx';
 import { refCode } from '../lib/refCapture.js';
 
-const blank = { username: '', first_name: '', last_name: '', phone: '', email: '', password: '', confirm: '', province: '', city: '', barangay: '' };
+const blank = { username: '', first_name: '', last_name: '', phone: '', email: '', password: '', confirm: '' };
 const friendly = (m) => (/already registered|already been registered/i.test(m) ? 'That email address is already registered. Try signing in instead.'
   : /database error/i.test(m) ? 'That username is already taken. Please choose another.'
   : /rate limit|too many/i.test(m) ? 'Too many attempts. Please wait a moment and try again.'
@@ -31,7 +31,6 @@ export default function Register() {
     if (!/^\S+@\S+\.\S+$/.test(f.email.trim())) return 'Enter a valid email address.';
     if (f.password.length < 6) return 'Password must be at least 6 characters.';
     if (f.password !== f.confirm) return 'Passwords do not match.';
-    if (!f.province.trim() || !f.city.trim() || !f.barangay.trim()) return 'Enter your province, city/municipality and barangay.';
     return '';
   };
 
@@ -49,7 +48,7 @@ export default function Register() {
       const email = f.email.trim().toLowerCase();
       const { data, error } = await supabase.auth.signUp({
         email, password: f.password,
-        options: { data: { username: f.username.trim(), first_name: f.first_name.trim(), last_name: f.last_name.trim(), phone: cleanPhone(f.phone), province: f.province.trim(), city: f.city.trim(), barangay: f.barangay.trim() } },
+        options: { data: { username: f.username.trim(), first_name: f.first_name.trim(), last_name: f.last_name.trim(), phone: cleanPhone(f.phone) } },
       });
       if (error) { setErr(friendly(error.message)); return; }
       if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) { setErr('That email address is already registered. Try signing in instead.'); return; }
@@ -78,12 +77,6 @@ export default function Register() {
         <Field label="Last name" icon={User} autoComplete="family-name" value={f.last_name} onChange={set('last_name')} />
       </div>
       <Field label="Phone number" icon={Phone} type="tel" autoComplete="tel" value={f.phone} onChange={set('phone')} />
-      <h3 className="gold-text">Address</h3>
-      <Field label="Province" icon={MapPin} value={f.province} onChange={set('province')} />
-      <div className="grid2">
-        <Field label="City / Municipality" icon={Building2} value={f.city} onChange={set('city')} />
-        <Field label="Barangay" icon={Home} value={f.barangay} onChange={set('barangay')} />
-      </div>
       {refCode() && <p className="small dim">You were invited by <b>{refCode()}</b>. We will add this automatically.</p>}
       <Msg>{err}</Msg>
       <button className="btn gold block" disabled={busy}>{busy ? <Loader2 size={18} className="spin" /> : <UserPlus size={18} />}{busy ? 'Creating account…' : 'Create account'}</button>
