@@ -26,12 +26,10 @@ export default function GlobalChat() {
   
   const scrollContainerRef = useRef(null);
 
-  // LOCK THE BACKGROUND PAGE FROM SCROLLING
+  // Prevent background page from scrolling while in chat
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
+    return () => { document.body.style.overflow = 'auto'; };
   }, []);
 
   const fetchVips = async () => {
@@ -135,19 +133,25 @@ export default function GlobalChat() {
   const charCount = Array.from(text).length;
 
   return (
-    // 1. FIXED FULL-SCREEN CONTAINER
+    // The outer container is fixed to the screen and uses Flexbox column
     <div style={{ 
       position: 'fixed', 
       top: 0, left: 0, right: 0, bottom: 0, 
       zIndex: 9999, 
+      display: 'flex', 
+      flexDirection: 'column', 
       background: 'var(--bg)' 
     }}>
       
-      {/* 2. ABSOLUTE HEADER */}
+      {/* 1. HEADER (Fixed Height, Never Shrinks) */}
       <div style={{ 
-        position: 'absolute', top: 0, left: 0, right: 0, height: 64, 
-        display: 'flex', alignItems: 'center', padding: '0 16px', 
-        background: 'var(--bg)', borderBottom: '1px solid var(--line)' 
+        flexShrink: 0, 
+        height: 64, 
+        display: 'flex', 
+        alignItems: 'center', 
+        padding: '0 16px', 
+        background: 'var(--bg)', 
+        borderBottom: '1px solid var(--line)' 
       }}>
         <button onClick={() => nav('/')} style={{ 
           background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 40, height: 40, 
@@ -161,12 +165,17 @@ export default function GlobalChat() {
         </span>
       </div>
 
-      {/* 3. SCROLLABLE MIDDLE SECTION (Constrained between header and input) */}
+      {/* 2. MESSAGES (Flex: 1 takes up remaining space, Scrolls internally) */}
       <div 
         ref={scrollContainerRef}
         style={{ 
-          position: 'absolute', top: 64, bottom: 80, left: 0, right: 0, 
-          overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 16 
+          flex: 1, 
+          minHeight: 0, // Crucial fix for flexbox scrolling
+          overflowY: 'auto', 
+          padding: '16px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 16 
         }}
       >
         {loading ? (
@@ -195,7 +204,6 @@ export default function GlobalChat() {
                   </span>
                 )}
                 
-                {/* STANDARD BUBBLE FOR EVERYONE */}
                 <div style={{ 
                   background: isMine ? '#d4af37' : '#e2e8f0', 
                   color: isMine ? '#000' : '#1a202c',
@@ -214,14 +222,15 @@ export default function GlobalChat() {
         )}
       </div>
 
-      {/* 4. ABSOLUTE INPUT AT BOTTOM */}
+      {/* 3. INPUT (Fixed Height, Never Shrinks) */}
       <div style={{ 
-        position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, 
-        background: 'var(--bg)', borderTop: '1px solid var(--line)', 
-        display: 'flex', alignItems: 'center', padding: '0 16px',
-        paddingBottom: 'env(safe-area-inset-bottom)'
+        flexShrink: 0, 
+        padding: '16px', 
+        paddingBottom: 'calc(16px + env(safe-area-inset-bottom))',
+        background: 'var(--bg)',
+        borderTop: '1px solid var(--line)'
       }}>
-        {err && <p style={{ position: 'absolute', top: -24, left: 0, right: 0, color: 'red', fontSize: 12, textAlign: 'center' }}>{err}</p>}
+        {err && <p style={{ color: 'red', fontSize: 12, marginBottom: 8, textAlign: 'center' }}>{err}</p>}
         
         <form onSubmit={submit} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
           <div style={{ flex: 1, background: 'var(--surface)', borderRadius: 24, padding: '8px 16px', display: 'flex', alignItems: 'center' }}>
