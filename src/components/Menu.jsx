@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Award, BookOpen, Bell, Heart, PackageOpen, Target, Trophy, Crown, Dices, Gift, History, Home, Info, LifeBuoy, LogIn, Sparkles, Tag, Ticket, User, UserPlus, Users, X } from 'lucide-react';
+import { Award, BookOpen, Bell, Heart, PackageOpen, Target, Trophy, Crown, Dices, Gift, History, Home, Info, LifeBuoy, LogIn, Sparkles, Star, Tag, Ticket, User, UserPlus, Users, X } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 
 const discover = [
@@ -21,6 +21,7 @@ const member = [
   
   ['/history', 'Points history', History], 
   ['/notifications', 'Notifications', Bell], 
+  ['/review', 'My review', Star],
   ['/profile', 'My profile', User]
 ];
 
@@ -66,7 +67,7 @@ export default function Menu({ open, onClose }) {
         </div>
         {group('DISCOVER', discover)}
         {session && group('MY ACCOUNT', member)}
-        {!session && group('JOIN', guest)}
+        {session ? group('MY ACCOUNT', member) : group('JOIN', guest)}
       </aside>
     </>
   );

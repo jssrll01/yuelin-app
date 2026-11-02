@@ -6,6 +6,7 @@ import { useAuth } from '../auth.jsx';
 import { peso, pts } from '../format.js';
 import { Empty, Msg, PageTitle, Spinner } from '../components/Ui.jsx';
 import ConfirmRedeem from '../components/ConfirmRedeem.jsx';
+import ReviewNotice from '../components/ReviewNotice.jsx';
 import { catIcon, catName, groupRewards, nextGoal, soldOut } from '../lib/rewardsCat.js';
 import { call, isFeatured, isNew } from '../lib/yl.js';
 
@@ -67,6 +68,7 @@ export default function Exchange() {
     <div className="stack">
       <PageTitle icon={Gift} eyebrow="COLLECTION" title="Reward exchange" sub={'Your balance: ' + pts(bal) + ' points (' + peso(bal) + ')'} />
       <Msg>{err}</Msg><Msg kind="good">{ok}</Msg>
+      <ReviewNotice />
       <div className="row" style={{ flexWrap: 'wrap' }}>
         <Link to="/redemptions" className="btn sm">My exchanges</Link>
         {saved && <Link to="/wishlist" className="btn sm"><Heart size={14} />Wishlist ({saved.size})</Link>}

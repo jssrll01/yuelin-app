@@ -17,7 +17,7 @@ export default function ConfirmRedeem({ reward, balance, onClose, onDone }) {
   const [err, setErr] = useState('');
   const [res, setRes] = useState(null);
   const [needRev, setNeedRev] = useState(false);
-  useEffect(() => { let d = false; supabase.from('member_reviews').select('id').eq('status', 'active').maybeSingle().then(({ data }) => { if (!d) setNeedRev(!data); }); return () => { d = true; }; }, []);
+  useEffect(() => { let d = false; supabase.from('member_reviews').select('id').eq('status', 'active').maybeSingle().then(({ data, error }) => { if (!d) setNeedRev(!error && !data); }); return () => { d = true; }; }, []);
 
   // re-validate availability and price when the dialog opens
   useEffect(() => {
