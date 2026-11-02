@@ -127,29 +127,30 @@ export default function GlobalChat() {
   const charCount = Array.from(text).length;
 
   return (
-    <div style={{ height: '100dvh', background: 'var(--bg)', position: 'relative' }}>
+    // FIXED full-screen container, ignoring parent paddings
+    <div style={{ 
+      position: 'fixed', 
+      inset: 0, 
+      zIndex: 9999, 
+      display: 'flex', 
+      flexDirection: 'column', 
+      background: 'var(--bg)' 
+    }}>
       
-      <style>
-        {`
-          @keyframes vipGlow {
-            0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.4), inset 0 0 5px rgba(212, 175, 55, 0.1); }
-            50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.8), inset 0 0 15px rgba(212, 175, 55, 0.3); }
-            100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.4), inset 0 0 5px rgba(212, 175, 55, 0.1); }
-          }
-          .vip-bubble { animation: vipGlow 3s infinite; }
-        `}
-      </style>
-
-      {/* FIXED Header */}
+      {/* Header (Fixed via flexbox, flexShrink: 0) */}
       <div style={{ 
-        position: 'fixed', top: 0, left: 0, right: 0, height: 72, zIndex: 50,
-        display: 'flex', alignItems: 'center', gap: 12, padding: '16px',
-        background: 'var(--bg)' // Solid background to hide scrolling text underneath
+        flexShrink: 0, 
+        height: 64, 
+        display: 'flex', 
+        alignItems: 'center', 
+        padding: '0 16px', 
+        borderBottom: '1px solid var(--line)',
+        background: 'var(--bg)'
       }}>
         <button onClick={() => nav('/')} style={{ 
-          background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 44, height: 44, 
+          background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 40, height: 40, 
           display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', 
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+          boxShadow: '0 2px 8px rgba(0,0,0,0.05)', marginRight: 12
         }}>
           <ArrowLeft size={20} />
         </button>
@@ -158,14 +159,16 @@ export default function GlobalChat() {
         </span>
       </div>
 
-      {/* Scrollable Messages Area */}
+      {/* Messages (Scrollable via flex: 1) */}
       <div 
         ref={scrollContainerRef}
         style={{ 
-          height: '100%', 
+          flex: 1, 
           overflowY: 'auto', 
-          padding: '80px 16px 100px 16px', // Padding top and bottom to avoid fixed headers
-          display: 'flex', flexDirection: 'column', gap: 16 
+          padding: '16px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 16 
         }}
       >
         {loading ? (
@@ -185,24 +188,27 @@ export default function GlobalChat() {
               <div key={m.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: isMine ? 'flex-end' : 'flex-start' }}>
                 {!isConsecutive && (
                   <span style={{ 
-                    fontSize: 11, color: isVip ? '#d4af37' : 'var(--dim)', marginBottom: 4, marginLeft: 4, marginRight: 4,
-                    display: 'flex', alignItems: 'center', gap: 4, fontWeight: isVip ? 700 : 500
+                    fontSize: 11, color: 'var(--dim)', marginBottom: 4, marginLeft: 4, marginRight: 4,
+                    display: 'flex', alignItems: 'center', gap: 4, fontWeight: 500
                   }}>
-                    {isMine ? 'You' : m.username} {isVip && <Crown size={12} color="#d4af37" />} · {formatPhtTime(m.created_at)}
+                    {isMine ? 'You' : m.username} 
+                    {isVip && <Crown size={12} color="#d4af37" />} 
+                    · {formatPhtTime(m.created_at)}
                   </span>
                 )}
                 
-                <div className={isVip ? 'vip-bubble' : ''} style={{ 
-                  background: isVip ? '#121212' : (isMine ? '#d4af37' : '#e2e8f0'), 
-                  color: isVip ? '#f8f8f8' : (isMine ? '#000' : '#1a202c'),
-                  border: isVip ? '1px solid rgba(212, 175, 55, 0.5)' : 'none',
+                {/* Normal Bubble Styling for Everyone */}
+                <div style={{ 
+                  background: isMine ? '#d4af37' : '#e2e8f0', 
+                  color: isMine ? '#000' : '#1a202c',
+                  border: 'none',
                   padding: '12px 16px', 
                   borderRadius: 16, 
                   borderBottomRightRadius: isMine && !isConsecutive ? 4 : 16,
                   borderBottomLeftRadius: !isMine && !isConsecutive ? 4 : 16,
                   maxWidth: '85%', wordBreak: 'break-word', whiteSpace: 'pre-wrap',
-                  fontFamily: isVip ? 'Georgia, serif' : 'inherit', 
-                  fontSize: isVip ? 15 : 14, lineHeight: 1.5
+                  fontFamily: 'inherit', 
+                  fontSize: 15, lineHeight: 1.5
                 }}>
                   {m.message}
                 </div>
@@ -212,27 +218,36 @@ export default function GlobalChat() {
         )}
       </div>
 
-      {/* FIXED Input Area */}
+      {/* Input (Fixed via flexbox, flexShrink: 0) */}
       <div style={{ 
-        position: 'fixed', bottom: 16, left: 16, right: 16, zIndex: 50,
-        background: 'var(--surface)', padding: '8px 12px', borderRadius: 30,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-        display: 'flex', alignItems: 'center', gap: 12
+        flexShrink: 0, 
+        padding: '16px', 
+        paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
+        background: 'var(--bg)',
+        borderTop: '1px solid var(--line)'
       }}>
-        {err && <p style={{ position: 'absolute', top: -24, left: 0, right: 0, color: 'red', fontSize: 12, textAlign: 'center' }}>{err}</p>}
+        {err && <p style={{ color: 'red', fontSize: 12, marginBottom: 8, textAlign: 'center' }}>{err}</p>}
         
         <form onSubmit={submit} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+          <div style={{ 
+            flex: 1, 
+            background: 'var(--surface)', 
+            borderRadius: 24, 
+            padding: '8px 16px', 
+            display: 'flex', 
+            alignItems: 'center',
+            boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.05)'
+          }}>
             <textarea
               rows={1} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} placeholder="Message everyone..."
-              style={{ width: '100%', background: 'none', border: 0, color: 'inherit', font: 'inherit', outline: 'none', resize: 'none', padding: '8px 4px', maxHeight: 100 }}
+              style={{ width: '100%', background: 'none', border: 0, color: 'inherit', font: 'inherit', outline: 'none', resize: 'none', padding: '8px 0', maxHeight: 100 }}
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
              <span style={{ fontSize: 10, color: 'var(--dim)' }}>{charCount}/5000</span>
              <button type="submit" disabled={sending || !text.trim() || charCount > 5000} style={{ 
                background: 'var(--bg)', border: 'none', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-               boxShadow: '3px 3px 8px #c8c8c8, -3px -3px 8px #ffffff',
+               boxShadow: '2px 2px 8px #c8c8c8, -2px -2px 8px #ffffff',
                cursor: sending || !text.trim() || charCount > 5000 ? 'not-allowed' : 'pointer',
                color: sending || !text.trim() || charCount > 5000 ? 'var(--dim)' : '#d4af37'
              }}>
