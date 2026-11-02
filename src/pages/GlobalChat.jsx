@@ -141,6 +141,18 @@ export default function GlobalChat() {
       overflow: 'hidden' 
     }}>
       
+      <style>
+        {`
+          @keyframes skeletonPulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 0.3; }
+            100% { opacity: 0.7; }
+          }
+          .skeleton-pulse {
+            animation: skeletonPulse 1.5s ease-in-out infinite;
+          }
+        `}
+      </style>
       {/* 1. HEADER ROW */}
       <div style={{ 
         display: 'flex', 
@@ -176,7 +188,26 @@ export default function GlobalChat() {
         }}
       >
         {loading ? (
-          <div style={{ textAlign: 'center', marginTop: 40, color: 'var(--dim)' }}>Loading messages...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, width: '100%', marginTop: 16 }}>
+            {[1, 2, 3, 4, 5, 6].map((i) => {
+              const isRight = i % 2 === 0;
+              return (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: isRight ? 'flex-end' : 'flex-start', width: '100%' }}>
+                  {/* Skeleton Username */}
+                  <div style={{ width: isRight ? 80 : 60, height: 12, background: 'var(--line)', borderRadius: 4, marginBottom: 8 }} className="skeleton-pulse" />
+                  {/* Skeleton Bubble */}
+                  <div style={{ 
+                    width: isRight ? '65%' : '50%', 
+                    height: i % 3 === 0 ? 75 : 50, 
+                    background: 'var(--surface)', 
+                    borderRadius: 16, 
+                    borderBottomRightRadius: isRight ? 4 : 16, 
+                    borderBottomLeftRadius: !isRight ? 4 : 16 
+                  }} className="skeleton-pulse" />
+                </div>
+              );
+            })}
+          </div>
         ) : messages.length === 0 ? (
           <div style={{ textAlign: 'center', marginTop: 40, color: 'var(--dim)' }}>
             <MessageSquare size={48} style={{ margin: '0 auto 12px', opacity: 0.3 }} />
