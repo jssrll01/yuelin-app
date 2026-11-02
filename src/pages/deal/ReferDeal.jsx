@@ -13,7 +13,7 @@ import { Field, Msg } from '../../components/Ui.jsx';
 
 // Policy v1: referral = floor(base points x 20%). Integer math, so there is no float drift.
 const RULES = [
-  'When you add a friend\'s referral code, or sign up through their link, you earn a one-time 10-point welcome bonus.',
+  'When you add a friend\'s referral code, or sign up through their link, you earn a one-time 10-point bonus after your first package-code redemption.',
   'Your referral link is built from your username. When a friend opens it, the code is saved on their device and added automatically when they sign up.',
   'A friend can add one referrer, once, before their first package-code redemption. It cannot be changed afterwards.',
   'You cannot refer yourself, and two accounts cannot refer each other.',
