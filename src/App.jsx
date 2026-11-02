@@ -16,6 +16,7 @@ import Missions from './pages/Missions.jsx';
 import Achievements from './pages/Achievements.jsx';
 import LeaderboardPage from './pages/LeaderboardPage.jsx';
 import Redemptions from './pages/Redemptions.jsx';
+import Review from './pages/Review.jsx';
 import VipDashboard from './pages/VipDashboard.jsx';
 import CheckIn from './pages/CheckIn.jsx';
 import HomeDeal from './pages/deal/HomeDeal.jsx';
@@ -45,6 +46,7 @@ export default function App() {
         <Route path="/missions" element={guard(<Missions />)} />
         <Route path="/achievements" element={guard(<Achievements />)} />
         <Route path="/leaderboard" element={guard(<LeaderboardPage />)} />
+        <Route path="/review" element={guard(<Review />)} />
         <Route path="/redemptions" element={guard(<Redemptions />)} />
         <Route path="/vip-dashboard" element={guard(<VipDashboard />)} />
         <Route path="/checkin" element={guard(<CheckIn />)} />

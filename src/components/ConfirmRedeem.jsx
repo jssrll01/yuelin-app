@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Gift, Info, X } from 'lucide-react';
 import { call } from '../lib/yl.js';
 import { supabase } from '../supabase';
@@ -6,7 +7,7 @@ import { peso, pts, uid } from '../format.js';
 import { Msg } from './Ui.jsx';
 import { soldOut } from '../lib/rewardsCat.js';
 
-const ERR = { insufficient_points: 'You do not have enough points for this reward.', out_of_stock: 'Sorry, this reward just ran out of stock.', not_found: 'This reward is no longer available.', inactive: 'This reward is no longer available.' };
+const ERR = { review_required: 'Please write a review before redeeming rewards.', insufficient_points: 'You do not have enough points for this reward.', out_of_stock: 'Sorry, this reward just ran out of stock.', not_found: 'This reward is no longer available.', inactive: 'This reward is no longer available.' };
 
 /** Confirmation step. Nothing is deducted until the member presses Confirm; the server re-checks balance, price and stock. */
 export default function ConfirmRedeem({ reward, balance, onClose, onDone }) {
@@ -15,6 +16,8 @@ export default function ConfirmRedeem({ reward, balance, onClose, onDone }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [res, setRes] = useState(null);
+  const [needRev, setNeedRev] = useState(false);
+  useEffect(() => { let d = false; supabase.from('member_reviews').select('id').eq('status', 'active').maybeSingle().then(({ data }) => { if (!d) setNeedRev(!data); }); return () => { d = true; }; }, []);
 
   // re-validate availability and price when the dialog opens
   useEffect(() => {
@@ -59,9 +62,10 @@ export default function ConfirmRedeem({ reward, balance, onClose, onDone }) {
           </div>
           <p className="small dim">{out ? 'Out of stock' : live.stock !== null && live.stock !== undefined ? live.stock + ' left in stock' : 'Available'}</p>
           <div className="inset small dim" style={{ padding: 12 }}><Info size={14} style={{ verticalAlign: '-2px' }} /> Points are deducted when you confirm. Your exchange starts as <b>Pending</b> and is processed by our team. If it is rejected or canceled, your points are returned and shown in your history.</div>
+          {needRev && <div className="msg bad" role="alert">You need an active review before redeeming. <Link to="/review" className="gold-text" style={{ fontWeight: 700 }}>Write a review</Link></div>}
           <Msg>{err}</Msg>
           <div className="row"><button className="btn ghost" style={{ flex: 1 }} disabled={busy} onClick={onClose}>Cancel</button>
-            <button className="btn gold" style={{ flex: 1 }} disabled={busy || out || left < 0} onClick={confirm}>{busy ? 'Working…' : 'Confirm redemption'}</button></div>
+            <button className="btn gold" style={{ flex: 1 }} disabled={busy || out || left < 0 || needRev} onClick={confirm}>{busy ? 'Working…' : 'Confirm redemption'}</button></div>
         </>)}
         {res && (<>
           <p className="tick">Your exchange was placed. We will process it shortly.</p>
