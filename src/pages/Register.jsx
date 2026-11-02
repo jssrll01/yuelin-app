@@ -10,7 +10,7 @@ import { refCode } from '../lib/refCapture.js';
 
 const blank = { username: '', first_name: '', last_name: '', phone: '', email: '', password: '', confirm: '' };
 const friendly = (m) => (/already registered|already been registered/i.test(m) ? 'That email address is already registered. Try signing in instead.'
-  : /database error/i.test(m) ? 'That username is already taken. Please choose another.'
+  : /database error/i.test(m) ? 'We could not create your account right now. Please try again in a moment.'
   : /rate limit|too many/i.test(m) ? 'Too many attempts. Please wait a moment and try again.'
   : /password/i.test(m) ? m : 'Something went wrong. Please try again.');
 
