@@ -21,7 +21,7 @@ const member = [
   
   ['/history', 'Points history', History], 
   ['/notifications', 'Notifications', Bell], 
-  ['/review', 'My review', Star],
+  ['/review', 'Community review', Star],
   ['/profile', 'My profile', User]
 ];
 
