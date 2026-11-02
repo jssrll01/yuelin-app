@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Bell, Coins, Crown, Dices, Gift, Home, Menu as MenuIcon, Ticket, User, Users } from 'lucide-react';
+import { Bell, Coins, Crown, Dices, Gift, Home, Menu as MenuIcon, Ticket, User, Users , MessageSquare } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 import { pts } from '../format.js';
 import InstallPrompt from './InstallPrompt.jsx';
@@ -28,7 +28,8 @@ export default function Layout() {
             <Link to="/notifications" className="icon-btn" aria-label="Notifications">
               <Bell size={20} />{unread > 0 && <span className="dot">{unread > 9 ? '9+' : unread}</span>}
             </Link>
-            <Link to="/profile" className="icon-btn" aria-label="Profile"><User size={20} /></Link>
+            <Link to="/global-chat" className="icon-btn" aria-label="Global Chat" style={{ marginRight: 8 }}><MessageSquare size={18} /></Link>
+<Link to="/profile" className="icon-btn" aria-label="Profile"><User size={20} /></Link>
           </div>
         </div>
       </header>
