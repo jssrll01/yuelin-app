@@ -26,6 +26,14 @@ export default function GlobalChat() {
   
   const scrollContainerRef = useRef(null);
 
+  // LOCK THE BACKGROUND PAGE FROM SCROLLING
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   const fetchVips = async () => {
     const vips = new Set();
     try {
@@ -127,25 +135,19 @@ export default function GlobalChat() {
   const charCount = Array.from(text).length;
 
   return (
-    // FIXED full-screen container, ignoring parent paddings
+    // 1. FIXED FULL-SCREEN CONTAINER
     <div style={{ 
       position: 'fixed', 
-      inset: 0, 
+      top: 0, left: 0, right: 0, bottom: 0, 
       zIndex: 9999, 
-      display: 'flex', 
-      flexDirection: 'column', 
       background: 'var(--bg)' 
     }}>
       
-      {/* Header (Fixed via flexbox, flexShrink: 0) */}
+      {/* 2. ABSOLUTE HEADER */}
       <div style={{ 
-        flexShrink: 0, 
-        height: 64, 
-        display: 'flex', 
-        alignItems: 'center', 
-        padding: '0 16px', 
-        borderBottom: '1px solid var(--line)',
-        background: 'var(--bg)'
+        position: 'absolute', top: 0, left: 0, right: 0, height: 64, 
+        display: 'flex', alignItems: 'center', padding: '0 16px', 
+        background: 'var(--bg)', borderBottom: '1px solid var(--line)' 
       }}>
         <button onClick={() => nav('/')} style={{ 
           background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 40, height: 40, 
@@ -159,16 +161,12 @@ export default function GlobalChat() {
         </span>
       </div>
 
-      {/* Messages (Scrollable via flex: 1) */}
+      {/* 3. SCROLLABLE MIDDLE SECTION (Constrained between header and input) */}
       <div 
         ref={scrollContainerRef}
         style={{ 
-          flex: 1, 
-          overflowY: 'auto', 
-          padding: '16px', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: 16 
+          position: 'absolute', top: 64, bottom: 80, left: 0, right: 0, 
+          overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 16 
         }}
       >
         {loading ? (
@@ -197,17 +195,15 @@ export default function GlobalChat() {
                   </span>
                 )}
                 
-                {/* Normal Bubble Styling for Everyone */}
+                {/* STANDARD BUBBLE FOR EVERYONE */}
                 <div style={{ 
                   background: isMine ? '#d4af37' : '#e2e8f0', 
                   color: isMine ? '#000' : '#1a202c',
-                  border: 'none',
                   padding: '12px 16px', 
                   borderRadius: 16, 
                   borderBottomRightRadius: isMine && !isConsecutive ? 4 : 16,
                   borderBottomLeftRadius: !isMine && !isConsecutive ? 4 : 16,
                   maxWidth: '85%', wordBreak: 'break-word', whiteSpace: 'pre-wrap',
-                  fontFamily: 'inherit', 
                   fontSize: 15, lineHeight: 1.5
                 }}>
                   {m.message}
@@ -218,26 +214,17 @@ export default function GlobalChat() {
         )}
       </div>
 
-      {/* Input (Fixed via flexbox, flexShrink: 0) */}
+      {/* 4. ABSOLUTE INPUT AT BOTTOM */}
       <div style={{ 
-        flexShrink: 0, 
-        padding: '16px', 
-        paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
-        background: 'var(--bg)',
-        borderTop: '1px solid var(--line)'
+        position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, 
+        background: 'var(--bg)', borderTop: '1px solid var(--line)', 
+        display: 'flex', alignItems: 'center', padding: '0 16px',
+        paddingBottom: 'env(safe-area-inset-bottom)'
       }}>
-        {err && <p style={{ color: 'red', fontSize: 12, marginBottom: 8, textAlign: 'center' }}>{err}</p>}
+        {err && <p style={{ position: 'absolute', top: -24, left: 0, right: 0, color: 'red', fontSize: 12, textAlign: 'center' }}>{err}</p>}
         
         <form onSubmit={submit} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
-          <div style={{ 
-            flex: 1, 
-            background: 'var(--surface)', 
-            borderRadius: 24, 
-            padding: '8px 16px', 
-            display: 'flex', 
-            alignItems: 'center',
-            boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.05)'
-          }}>
+          <div style={{ flex: 1, background: 'var(--surface)', borderRadius: 24, padding: '8px 16px', display: 'flex', alignItems: 'center' }}>
             <textarea
               rows={1} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} placeholder="Message everyone..."
               style={{ width: '100%', background: 'none', border: 0, color: 'inherit', font: 'inherit', outline: 'none', resize: 'none', padding: '8px 0', maxHeight: 100 }}
