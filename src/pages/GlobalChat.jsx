@@ -221,13 +221,15 @@ export default function GlobalChat() {
                 <div key={m.id || i} style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
                   <div style={{ 
                     background: 'var(--surface)', 
-                    color: 'var(--dim)', 
-                    padding: '10px 16px', 
-                    borderRadius: 20, 
+                    color: 'var(--text)', 
+                    padding: '16px', 
+                    borderRadius: 16, 
                     fontSize: 13, 
-                    textAlign: 'center',
+                    textAlign: 'left',
+                    whiteSpace: 'pre-wrap', // This ensures line breaks are preserved
                     border: '1px solid var(--line)',
-                    maxWidth: '90%'
+                    maxWidth: '90%',
+                    lineHeight: 1.6
                   }}>
                     {m.message}
                   </div>
