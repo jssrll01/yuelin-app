@@ -11,6 +11,8 @@ export const MISSION_CATS = [['daily', 'Daily'], ['weekly', 'Weekly'], ['special
 
 /** Reads real missions + the member's progress. Completion and rewards are decided by the backend; this only displays them. */
 export async function loadMissions(uidv) {
+  const sy = uidv ? await supabase.rpc('sync_missions').then((x) => x, () => null) : null;
+  const paid = !!(sy && sy.data && Number(sy.data.points) > 0);
   const m = await q(supabase.from('missions').select('*').eq('is_active', true).order('reward_points', { ascending: true }));
   if (m.error) return { missing: m.missing, rows: [] };
   const p = uidv ? await q(supabase.from('user_mission_progress').select('*').eq('user_id', uidv)) : { data: [] };
@@ -25,7 +27,7 @@ export async function loadMissions(uidv) {
     const state = done ? 'done' : (ends && ends < now) ? 'expired' : (starts && starts > now) ? 'soon' : 'open';
     return { ...x, target, prog, done, state, doneAt: pr && pr.completed_at, ends };
   }).filter((x) => x.state !== 'expired' || x.done);
-  return { rows, missing: false };
+  return { rows, missing: false, paid };
 }
 
 export function MissionCard({ m }) {
@@ -49,11 +51,11 @@ export function MissionCard({ m }) {
 }
 
 export default function MissionList({ limit, showTabs = true, initial = 'daily' }) {
-  const { session } = useAuth();
+  const { session, refresh } = useAuth();
   const [st, setSt] = useState(null);
   const [cat, setCat] = useState(initial);
   const uidv = session && session.user ? session.user.id : null;
-  useEffect(() => { let dead = false; loadMissions(uidv).then((r) => { if (!dead) setSt(r); }); return () => { dead = true; }; }, [uidv]);
+  useEffect(() => { let dead = false; loadMissions(uidv).then((r) => { if (!dead) { setSt(r); if (r.paid && refresh) refresh(); } }); return () => { dead = true; }; }, [uidv]);
   if (!st) return <PageSkeleton variant="list" n={3} />;
   if (st.missing) return <Empty icon={Target} title="Missions are coming soon" text="Check back shortly." />;
   const rows = st.rows.filter((m) => !m.done || cat === 'done');

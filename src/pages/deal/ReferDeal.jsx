@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AtSign, Check, Copy, Share2 } from 'lucide-react';
 import { refLink } from '../../lib/refCapture.js';
+import { supabase } from '../../supabase';
 import { useAuth } from '../../auth.jsx';
 import { day, pts } from '../../format.js';
 import { getReferral, registerReferral } from '../../lib/api.js';
@@ -41,8 +42,9 @@ export default function ReferDeal() {
     const url = refLink(d.username);
     const text = 'Join me on YUÉLÍN and earn rewards.';
     try {
-      if (navigator.share) { await navigator.share({ title: 'YUÉLÍN', text, url }); return; }
+      if (navigator.share) { await navigator.share({ title: 'YUÉLÍN', text, url }); supabase.rpc('log_mission_event', { p_kind: 'referral_share' }).then(() => {}, () => {}); return; }
       await navigator.clipboard.writeText(url);
+      supabase.rpc('log_mission_event', { p_kind: 'referral_share' }).then(() => {}, () => {});
       setCopied(true); setTimeout(() => setCopied(false), 1800);
     } catch (e) { if (e && e.name !== 'AbortError') setMsg({ kind: 'bad', text: 'Could not share. Copy your username instead.' }); }
   };

@@ -5,7 +5,7 @@ import { useAuth } from '../auth.jsx';
 import { peso, pts, when } from '../format.js';
 import { Empty, PageTitle, Spinner } from '../components/Ui.jsx';
 
-const label = { code: 'Code redeemed', exchange: 'Reward exchange', game_stake: 'Game stake', game_win: 'Game payout', vip_bonus: 'VIP bonus', referral: 'Referral reward', checkin: 'Daily check-in', referral_bonus: 'Referral welcome bonus', mission: 'Mission reward', reversal: 'Points returned', refund: 'Points returned', adjustment: 'Adjustment', achievement: 'Achievement reward' };
+const label = { code: 'Code redeemed', exchange: 'Reward exchange', game_stake: 'Game stake', game_win: 'Game payout', vip_bonus: 'VIP bonus', referral: 'Referral reward', checkin: 'Daily check-in', referral_bonus: 'Referral welcome bonus', mission: 'Mission reward', refund: 'Refund', mission: 'Mission reward', reversal: 'Points returned', refund: 'Points returned', adjustment: 'Adjustment', achievement: 'Achievement reward' };
 const isRev = (r) => /revers|refund/i.test(r.reason || '');
 const FILTERS = [
   ['all', 'All', () => true],
