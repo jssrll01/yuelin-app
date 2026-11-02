@@ -4,7 +4,6 @@ import { Send, MessageSquare, ArrowLeft, Crown } from 'lucide-react';
 import { supabase } from '../supabase';
 import { useAuth } from '../auth.jsx';
 
-// Exact Philippine Time Formatter (e.g., 9:30 PM)
 const formatPhtTime = (isoString) => {
   if (!isoString) return '';
   return new Intl.DateTimeFormat('en-US', {
@@ -19,15 +18,15 @@ export default function GlobalChat() {
   const { profile } = useAuth();
   const nav = useNavigate();
   const [messages, setMessages] = useState([]);
-  const [vipUsers, setVipUsers] = useState({}); // Cache for VIP status
+  const [vipUsers, setVipUsers] = useState({}); 
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState('');
   const bottomRef = useRef(null);
 
+  // 1. Load Messages securely
   const loadMessages = async () => {
-    // Join profiles to get verified VIP status efficiently
     const { data, error } = await supabase
       .from('global_chat_messages')
       .select('*, author:user_id(is_vip, tier)')
@@ -36,7 +35,6 @@ export default function GlobalChat() {
     
     if (!error && data) {
       setMessages(data);
-      // Build VIP cache from fetched data
       const cache = {};
       data.forEach(m => {
         cache[m.user_id] = m.author?.is_vip || m.author?.tier === 'vip';
@@ -46,6 +44,7 @@ export default function GlobalChat() {
     setLoading(false);
   };
 
+  // 2. Realtime Subscription (Fixed: Dependency array is now empty so it doesn't disconnect)
   useEffect(() => {
     loadMessages();
 
@@ -54,17 +53,20 @@ export default function GlobalChat() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'global_chat_messages' }, async (payload) => {
         const newMsg = payload.new;
         
-        // If the sender isn't in our VIP cache, fetch their profile once
-        if (vipUsers[newMsg.user_id] === undefined) {
-          const { data } = await supabase.from('profiles').select('is_vip, tier').eq('id', newMsg.user_id).single();
-          if (data) {
-            setVipUsers(prev => ({ ...prev, [newMsg.user_id]: data.is_vip || data.tier === 'vip' }));
-          }
-        }
+        // Fetch VIP status once per user
+        setVipUsers(prev => {
+          if (prev[newMsg.user_id] !== undefined) return prev;
+          supabase.from('profiles').select('is_vip, tier').eq('id', newMsg.user_id).single().then(({ data }) => {
+            if (data) setVipUsers(current => ({ ...current, [newMsg.user_id]: data.is_vip || data.tier === 'vip' }));
+          });
+          return prev;
+        });
 
         setMessages((prev) => {
           if (prev.find(m => m.id === newMsg.id)) return prev;
-          return [...prev, newMsg];
+          // If we receive our own optimistic message from DB, remove the temp one
+          const filtered = prev.filter(m => !m.id.startsWith('temp-') || m.message !== newMsg.message);
+          return [...filtered, newMsg];
         });
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'global_chat_messages' }, () => {
@@ -73,7 +75,7 @@ export default function GlobalChat() {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [vipUsers]); // Added vipUsers dependency
+  }, []); // <--- CRUCIAL FIX: Empty array means it won't unmount/reload endlessly
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -91,7 +93,6 @@ export default function GlobalChat() {
     const tempText = text.trim();
     setText(''); 
 
-    // Optimistic UI insert (DB trigger will override username, we add author manually for UI)
     const isMeVip = profile?.is_vip || profile?.tier === 'vip';
     const optimisticMsg = {
       id: 'temp-' + Date.now(),
@@ -104,20 +105,16 @@ export default function GlobalChat() {
 
     setMessages(prev => [...prev, optimisticMsg]);
 
-    const { data, error } = await supabase.from('global_chat_messages').insert({
+    const { error } = await supabase.from('global_chat_messages').insert({
       user_id: profile.id,
       message: tempText,
       username: profile.username
-    }).select().single();
+    });
 
     if (error) {
       setErr(error.message);
       setText(tempText);
-      setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id)); // Remove failed msg
-    } else if (data) {
-      // Replace optimistic with real DB data
-      setMessages(prev => prev.map(m => m.id === optimisticMsg.id ? { ...data, author: { is_vip: isMeVip, tier: profile?.tier } } : m));
-      setVipUsers(prev => ({ ...prev, [profile.id]: isMeVip }));
+      setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
     }
     setSending(false);
   };
@@ -133,8 +130,7 @@ export default function GlobalChat() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', background: 'var(--bg)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
-      
-      {/* Top Bar */}
+      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', padding: '16px', borderBottom: '1px solid var(--line)', background: 'var(--bg)' }}>
         <button onClick={() => nav('/')} style={{ background: 'var(--surface)', border: 'none', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginRight: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
           <ArrowLeft size={20} />
@@ -145,7 +141,7 @@ export default function GlobalChat() {
         </div>
       </div>
 
-      {/* Messages Area */}
+      {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
         {loading ? (
           <div style={{ textAlign: 'center', marginTop: 40, color: 'var(--dim)' }}>Loading messages...</div>
@@ -158,31 +154,19 @@ export default function GlobalChat() {
           messages.map((m, i) => {
             const isMine = m.user_id === profile?.id;
             const isConsecutive = i > 0 && messages[i - 1].user_id === m.user_id;
-            
-            // VIP Logic
             const isVip = m.author?.is_vip || m.author?.tier === 'vip' || vipUsers[m.user_id];
 
             return (
               <div key={m.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: isMine ? 'flex-end' : 'flex-start' }}>
                 {!isConsecutive && (
                   <span style={{ 
-                    fontSize: 11, 
-                    color: isVip ? '#d4af37' : 'var(--dim)', 
-                    marginBottom: 4, 
-                    marginLeft: 4, 
-                    marginRight: 4,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    fontWeight: isVip ? 600 : 400
+                    fontSize: 11, color: isVip ? '#d4af37' : 'var(--dim)', marginBottom: 4, marginLeft: 4, marginRight: 4,
+                    display: 'flex', alignItems: 'center', gap: 4, fontWeight: isVip ? 600 : 400
                   }}>
-                    {m.username} 
-                    {isVip && <Crown size={12} />} 
-                    · {formatPhtTime(m.created_at)}
+                    {m.username} {isVip && <Crown size={12} />} · {formatPhtTime(m.created_at)}
                   </span>
                 )}
                 
-                {/* VIP vs Standard Message Box */}
                 <div style={{ 
                   background: isVip ? '#111111' : (isMine ? '#d4af37' : '#e2e8f0'), 
                   color: isVip ? '#f8f8f8' : (isMine ? '#000' : '#1a202c'),
@@ -192,13 +176,9 @@ export default function GlobalChat() {
                   borderRadius: 12, 
                   borderBottomRightRadius: isMine && !isConsecutive ? 4 : 12,
                   borderBottomLeftRadius: !isMine && !isConsecutive ? 4 : 12,
-                  maxWidth: '85%',
-                  wordBreak: 'break-word',
-                  whiteSpace: 'pre-wrap',
-                  fontFamily: isVip ? 'Georgia, serif' : 'inherit', // Premium Serif for VIP
-                  fontSize: isVip ? 15 : 14,
-                  lineHeight: 1.5,
-                  transition: 'all 0.2s ease'
+                  maxWidth: '85%', wordBreak: 'break-word', whiteSpace: 'pre-wrap',
+                  fontFamily: isVip ? 'Georgia, serif' : 'inherit', 
+                  fontSize: isVip ? 15 : 14, lineHeight: 1.5, transition: 'all 0.2s ease'
                 }}>
                   {m.message}
                 </div>
@@ -209,38 +189,20 @@ export default function GlobalChat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input Area */}
+      {/* Input */}
       <div style={{ padding: '0 16px 16px 16px' }}>
         {err && <p style={{ color: 'red', fontSize: 12, marginBottom: 8, textAlign: 'center' }}>{err}</p>}
         <form onSubmit={submit} style={{ display: 'flex', alignItems: 'flex-end', gap: 12 }}>
-          
-          <div style={{ 
-            flex: 1, 
-            background: 'var(--bg)', 
-            boxShadow: 'inset 4px 4px 10px #c8c8c8, inset -4px -4px 10px #ffffff',
-            borderRadius: 24,
-            padding: '8px 16px',
-            display: 'flex',
-            alignItems: 'center'
-          }}>
+          <div style={{ flex: 1, background: 'var(--bg)', boxShadow: 'inset 4px 4px 10px #c8c8c8, inset -4px -4px 10px #ffffff', borderRadius: 24, padding: '8px 16px', display: 'flex', alignItems: 'center' }}>
             <textarea
-              rows={1}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a message..."
+              rows={1} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} placeholder="Type a message..."
               style={{ width: '100%', background: 'none', border: 0, color: 'inherit', font: 'inherit', outline: 'none', resize: 'none', padding: '8px 0', maxHeight: 100 }}
             />
           </div>
-
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
              <span style={{ fontSize: 10, color: 'var(--dim)', marginBottom: 4 }}>{charCount}/5000</span>
              <button type="submit" disabled={sending || !text.trim() || charCount > 5000} style={{ 
-               background: 'var(--bg)', 
-               border: 'none', 
-               width: 48, height: 48, 
-               borderRadius: '50%', 
-               display: 'flex', alignItems: 'center', justifyContent: 'center',
+               background: 'var(--bg)', border: 'none', width: 48, height: 48, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                boxShadow: '4px 4px 10px #c8c8c8, -4px -4px 10px #ffffff',
                cursor: sending || !text.trim() || charCount > 5000 ? 'not-allowed' : 'pointer',
                color: sending || !text.trim() || charCount > 5000 ? 'var(--dim)' : '#d4af37'
@@ -248,7 +210,6 @@ export default function GlobalChat() {
                <Send size={20} style={{ marginLeft: -2, marginTop: 2 }} />
              </button>
           </div>
-
         </form>
       </div>
     </div>
