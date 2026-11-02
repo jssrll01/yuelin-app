@@ -10,6 +10,8 @@ import { useRefCapture } from '../lib/refCapture.js';
 const tabs = [['/', 'Home', Home], ['/redeem', 'Redeem', Ticket], ['/exchange', 'Rewards', Gift], ['/refer-a-friend-deal', 'Referral', Users], ['/vip-membership-deal', 'VIP', Crown]];
 
 export default function Layout() {
+  const location = useLocation();
+  const isChat = location.pathname === '/global-chat';
   const { session, profile, unread } = useAuth();
   const loc = useLocation();
   useRefCapture();
