@@ -29,6 +29,12 @@ export default function Profile() {
     if (error) return setErr(error.message);
     setOk('Profile updated.'); refresh();
   };
+  const hide = async (on) => {
+    setErr(''); setOk('');
+    const { error } = await supabase.from('profiles').update({ hide_from_leaderboard: on }).eq('id', profile.id);
+    if (error) return setErr('Could not save your privacy setting.');
+    refresh();
+  };
   const out = async () => { await signOut(); nav('/'); };
 
   return (
@@ -57,6 +63,11 @@ export default function Profile() {
         </div>
         <button className="btn gold" disabled={busy}><Save size={18} />{busy ? 'Saving…' : 'Save changes'}</button>
       </form>
+      <div className="card stack">
+        <h2>Privacy</h2>
+        <label className="row between small"><span>Hide me from the public leaderboard</span><input type="checkbox" checked={!!profile.hide_from_leaderboard} onChange={(e) => hide(e.target.checked)} /></label>
+        <p className="dim small">Only your username and points are ever shown on the leaderboard. Never your email or phone.</p>
+      </div>
       <div className="card stack">
         <h2>App</h2>
         {inst.standalone && <p className="dim">YUÉLÍN is installed on this device.</p>}
