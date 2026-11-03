@@ -84,13 +84,6 @@ export default function Home() {
         </section>
       )}
 
-      <section className="stack">
-        <h2>Why collect points?</h2>
-        <div className="grid2">
-          {why.map(([I, t, d]) => (<div key={t} className="card lift row"><span className="ico"><I size={22} /></span><div><h3>{t}</h3><p className="dim">{d}</p></div></div>))}
-        </div>
-      </section>
-
             <div className="card stack" style={{ marginBottom: 16, border: '1px solid rgba(212, 175, 55, 0.3)' }}>
         <div className="row between">
           <h3 style={{ margin: 0, fontSize: 16 }}>🍓 YUÉLÍN FLAVOR VOTE IS OPEN! 🍵</h3>
@@ -110,19 +103,6 @@ export default function Home() {
 
       {session && rewards && <HomeExtras rewards={rewards} bal={bal} />}
 
-      <section className="stack">
-        <h2>What's on at {BRAND.name}</h2>
-        <div className="grid2">
-          {CAMPAIGNS.map((c) => (
-            <div key={c.title} className="card lift stack" style={{ gap: 10 }}>
-              <div className="row between"><span className="ico"><c.icon size={22} /></span><span className="badge">{c.tag}</span></div>
-              <h3>{c.title}</h3><p className="dim">{c.text}</p>
-              <Link to={c.to} className="btn sm" style={{ alignSelf: 'flex-start' }}>{c.cta}<ArrowRight size={14} /></Link>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {!vipOn && (
         <section className="card stack">
           <div className="row"><span className="ico"><Crown size={22} /></span><div><h2>Earn twice as fast with VIP</h2><p className="dim">₱99/month</p></div></div>
@@ -136,19 +116,6 @@ export default function Home() {
           <Link to="/vip-membership-deal" className="btn gold block">Become VIP<ArrowRight size={16} /></Link>
         </section>
       )}
-
-      <section className="card stack">
-        <div className="row"><span className="ico"><Users size={22} /></span><div><h2>Bring a friend, earn more</h2><p className="dim">Get 20% of your friend's base points whenever they redeem.</p></div></div>
-        <Link to="/refer-a-friend-deal" className="btn sm" style={{ alignSelf: 'flex-start' }}>Get my referral link<ArrowRight size={14} /></Link>
-      </section>
-
-      <section className="card stack">
-        <div className="row"><span className="ico"><Coins size={22} /></span><div><h2>Start in three steps</h2><p className="dim">Simple from the first tap.</p></div></div>
-        {join.map(([n, t, d]) => (
-          <div key={n} className="row inset"><span className="num">{n}</span><div><h3>{t}</h3><p className="dim">{d}</p></div></div>
-        ))}
-        {!session && <Link to="/register" className="btn gold block">Create my account</Link>}
-      </section>
 
       {!session && (
         <section className="card cta-band stack">
