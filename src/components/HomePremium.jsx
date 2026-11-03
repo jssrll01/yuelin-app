@@ -20,7 +20,7 @@ function Product({ p, i }) {
         <p className="eyebrow">YUÉLÍN</p>
         <h3 className="pl-name">{p.name}</h3>
         <p className="dim small">{p.desc}</p>
-        <div className="pl-price">{price ? <><b className="gold-text">{price}</b><span className="dim small"> / tub · 3 pcs</span></> : <span className="dim">Price on request</span>}</div>
+        <div className="pl-price">{price ? <><b className="gold-text">{price}</b><span className="dim small"> · 3 pcs</span></> : <span className="dim">Price on request</span>}</div>
         <a className="btn gold sm" href={FB} target="_blank" rel="noopener noreferrer"><MessageCircle size={14} />Inquire</a>
         <details className="pl-more">
           <summary>More info</summary>
@@ -39,7 +39,7 @@ export default function HomePremium() {
       <section className="stack" style={{ gap: 14 }}>
         <div><p className="eyebrow">THE COLLECTION</p><h2>Six signature flavors</h2><p className="dim">One YUÉLÍN experience, six distinctive creations.</p></div>
         <div className="pgrid stag">{PRODUCTS.map((p, i) => <Product key={p.id} p={p} i={i} />)}</div>
-        <p className="dim small center">Every flavor is ₱59 for 3 pcs per tub. Tap Inquire to order.</p>
+        <p className="dim small center">Every flavor is ₱59 for 3 pcs. Tap Inquire to order.</p>
       </section>
 
       <section className="stack" style={{ gap: 12 }}>
