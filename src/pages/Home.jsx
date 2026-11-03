@@ -8,6 +8,7 @@ import { BRAND, CAMPAIGNS } from '../brand.js';
 import { catIcon, groupRewards, nextGoal } from '../lib/rewardsCat.js';
 import { PageSkeleton } from '../components/Ui.jsx';
 import HomeExtras from '../components/HomeExtras.jsx';
+import BannerCarousel from '../components/BannerCarousel.jsx';
 
 const join = [['1', 'Create your account', 'Sign up free with your email and a few details.'], ['2', 'Redeem a code', 'Every YUÉLÍN pack can carry a code worth points.'], ['3', 'Exchange a reward', 'Pick something from the collection.']];
 const why = [
@@ -75,6 +76,8 @@ export default function Home() {
           <p className="dim small" style={{ marginTop: 14 }}>100 points = ₱1 · Instant points · No fees to join</p>
         </section>
       )}
+
+      <BannerCarousel />
 
       {low.length > 0 && (
         <section className="card stack" style={{ gap: 8 }}>

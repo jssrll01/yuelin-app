@@ -25,3 +25,13 @@
 .ach:not(.on){opacity:.8}
 .cats .cat{scroll-snap-align:start}
 input[type=checkbox]{width:18px;height:18px;accent-color:#b8860b}
+/* banner carousel */
+.bnr{display:flex;flex-direction:column;gap:10px}
+.bnr-view{overflow:hidden;border-radius:22px;box-shadow:var(--raise);touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.bnr-view:active{cursor:grabbing}
+.bnr-track{display:flex;will-change:transform}
+.bnr-slide{flex:0 0 100%;aspect-ratio:16/7;background:var(--bg)}
+.bnr-slide img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.bnr-dots{display:flex;justify-content:center;gap:8px}
+.bnr-dots button{width:8px;height:8px;border-radius:999px;background:var(--dim);opacity:.4;transition:width .25s,opacity .25s,background .25s}
+.bnr-dots button.on{width:22px;opacity:1;background:var(--gold)}
