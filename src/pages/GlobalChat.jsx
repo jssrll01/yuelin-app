@@ -32,20 +32,19 @@ export default function GlobalChat() {
     return () => { document.body.style.overflow = 'auto'; };
   }, []);
 
-  const fetchVips = async () => {
-    const vips = new Set();
-    try {
-      const { data: memberships } = await supabase.from('vip_memberships').select('user_id');
-      memberships?.forEach(m => vips.add(m.user_id));
-    } catch (e) { console.log(e); }
-
-    try {
-      const { data: profiles } = await supabase.from('profiles').select('id').or('is_vip.eq.true, tier.eq.vip');
-      profiles?.forEach(p => vips.add(p.id));
-    } catch (e) { console.log(e); }
-
-    setVipUsers(vips);
-  };
+  const fetchVips = async () => {}; // VIP status now comes from the live check below
+  const authorKey = [...new Set((messages || []).map((x) => x.user_id).filter(Boolean))].sort().join(',');
+  useEffect(() => {
+    if (!authorKey) return undefined;
+    let dead = false;
+    const run = async () => {
+      const { data, error } = await supabase.rpc('vip_active_ids', { p_ids: authorKey.split(',').slice(0, 200) });
+      if (!dead) setVipUsers(error || !Array.isArray(data) ? new Set() : new Set(data));
+    };
+    run();
+    const t = setInterval(run, 60000);
+    return () => { dead = true; clearInterval(t); };
+  }, [authorKey]);
 
   const loadMessages = async () => {
     const { data, error } = await supabase
@@ -168,7 +167,7 @@ export default function GlobalChat() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', 
           boxShadow: '0 2px 8px rgba(0,0,0,0.05)', marginRight: 12
         }}>
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} /><span style={{ fontSize: 13, fontWeight: 700, marginLeft: 6 }}>Global Chat</span>
         </button>
         <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>
           Global Chat
@@ -240,7 +239,7 @@ export default function GlobalChat() {
 
             const isMine = m.user_id === profile?.id;
             const isConsecutive = i > 0 && messages[i - 1].user_id === m.user_id;
-            const isVip = vipUsers.has(m.user_id) || m.sender_is_vip === true; 
+            const isVip = vipUsers.has(m.user_id); 
 
             return (
               <div key={m.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: isMine ? 'flex-end' : 'flex-start' }}>
@@ -250,13 +249,12 @@ export default function GlobalChat() {
                     display: 'flex', alignItems: 'center', gap: 4, fontWeight: 500
                   }}>
                     {isMine ? 'You' : m.username} 
-                    {isVip && <Crown size={12} color="#d4af37" />} 
+                    {isVip && <span className="vipt"><Crown size={10} />VIP</span>} 
                     · {formatPhtTime(m.created_at)}
                   </span>
                 )}
                 
-                <div style={{ 
-                  background: isMine ? '#d4af37' : '#e2e8f0', 
+                <div className={isVip ? 'vipb' : undefined} style={{ background: isMine ? '#d4af37' : '#e2e8f0', 
                   color: isMine ? '#000' : '#1a202c',
                   padding: '12px 16px', 
                   borderRadius: 16, 

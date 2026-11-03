@@ -35,3 +35,15 @@ input[type=checkbox]{width:18px;height:18px;accent-color:#b8860b}
 .bnr-dots{display:flex;justify-content:center;gap:8px}
 .bnr-dots button{width:8px;height:8px;border-radius:999px;background:var(--dim);opacity:.4;transition:width .25s,opacity .25s,background .25s}
 .bnr-dots button.on{width:22px;opacity:1;background:var(--gold)}
+/* VIP chat bubble */
+@keyframes vipIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes vipSheen{0%,60%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+@keyframes vipBorder{0%{background-position:0 0,0% 50%}100%{background-position:0 0,200% 50%}}
+.vipb{position:relative;overflow:hidden;border:1px solid transparent!important;color:#f3eee0!important;
+background:linear-gradient(145deg,#1d1a12,#0f0e0a) padding-box,linear-gradient(120deg,#f2d77a,#8a6d12,#f2d77a,#8a6d12) border-box!important;background-size:100% 100%,200% 200%!important;
+box-shadow:0 4px 14px rgba(0,0,0,.28);animation:vipIn .5s cubic-bezier(.2,.8,.2,1) both,vipBorder 8s linear infinite;transition:transform .25s}
+.vipb::after{content:"";position:absolute;top:0;left:0;width:35%;height:100%;pointer-events:none;background:linear-gradient(100deg,transparent,rgba(242,215,122,.16),transparent);transform:translateX(-120%);animation:vipSheen 7s ease-in-out infinite}
+.vipb:active{transform:scale(.985)}
+@media(hover:hover){.vipb:hover{transform:translateY(-1px)}}
+.vipt{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.08em;color:#2a2108;background:linear-gradient(135deg,#f6e08f,#d4af37 55%,#a8841c)}
+@media(prefers-reduced-motion:reduce){.vipb,.vipb::after{animation:none!important}}
