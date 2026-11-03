@@ -54,3 +54,16 @@ background-size:100% 100%,250% 250%!important;
 box-shadow:0 6px 18px rgba(184,146,58,.28),0 1px 0 rgba(255,255,255,.9) inset}
 .vipb.vipb::after{background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),rgba(246,224,143,.35),transparent)}
 .vipt{box-shadow:0 1px 4px rgba(184,146,58,.4)}
+/* product listing */
+.pl{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.pl-img{position:relative;aspect-ratio:4/3;background:linear-gradient(150deg,#fffdf6,#f1e7cc);display:flex;align-items:center;justify-content:center}
+.pl-img img{width:100%;height:100%;object-fit:cover;display:block}
+.pl-ph{color:var(--gold);opacity:.7}
+.pl-tag{position:absolute;left:12px;top:12px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;background:rgba(255,255,255,.9);color:var(--gold3);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.pl-body{padding:16px;display:flex;flex-direction:column;gap:8px}
+.pl-name{font-size:19px;letter-spacing:-.01em}
+.pl-price{font-size:22px;padding-top:4px}
+.pl-more summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--gold3);list-style:none}
+.pl-more summary::-webkit-details-marker{display:none}
+.pl-more summary::after{content:" +"}
+.pl-more[open] summary::after{content:" –"}
