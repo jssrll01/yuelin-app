@@ -47,3 +47,10 @@ box-shadow:0 4px 14px rgba(0,0,0,.28);animation:vipIn .5s cubic-bezier(.2,.8,.2,
 @media(hover:hover){.vipb:hover{transform:translateY(-1px)}}
 .vipt{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.08em;color:#2a2108;background:linear-gradient(135deg,#f6e08f,#d4af37 55%,#a8841c)}
 @media(prefers-reduced-motion:reduce){.vipb,.vipb::after{animation:none!important}}
+/* VIP bubble v2: pearl white, champagne gold edge */
+.vipb.vipb{color:#2b2414!important;font-family:Georgia,"Times New Roman",serif;letter-spacing:.01em;
+background:linear-gradient(160deg,#ffffff 0%,#fbf7ec 55%,#f3ead2 100%) padding-box,linear-gradient(120deg,#f6e08f,#b8923a,#fff1b8,#b8923a,#f6e08f) border-box!important;
+background-size:100% 100%,250% 250%!important;
+box-shadow:0 6px 18px rgba(184,146,58,.28),0 1px 0 rgba(255,255,255,.9) inset}
+.vipb.vipb::after{background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),rgba(246,224,143,.35),transparent)}
+.vipt{box-shadow:0 1px 4px rgba(184,146,58,.4)}

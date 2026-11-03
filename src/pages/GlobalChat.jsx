@@ -167,10 +167,10 @@ export default function GlobalChat() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', 
           boxShadow: '0 2px 8px rgba(0,0,0,0.05)', marginRight: 12
         }}>
-          <ArrowLeft size={20} /><span style={{ fontSize: 13, fontWeight: 700, marginLeft: 6 }}>Global Chat</span>
+          <ArrowLeft size={20} />
         </button>
         <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>
-          Global Chat
+          Global Community
         </span>
       </div>
 

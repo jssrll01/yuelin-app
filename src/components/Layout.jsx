@@ -61,7 +61,7 @@ export default function Layout() {
             <Link to="/notifications" className="icon-btn" aria-label="Notifications">
               <Bell size={20} />{unread > 0 && <span className="dot">{unread > 9 ? '9+' : unread}</span>}
             </Link>
-            <Link to="/global-chat" className="icon-btn" aria-label="Global Chat" ><MessageSquare size={18} /></Link>
+            <Link to="/global-chat" className="icon-btn" aria-label="Global Community" ><MessageSquare size={18} /></Link>
 <Link to="/profile" className="icon-btn" aria-label="Profile"><User size={20} /></Link>
           </div>
         </div>
