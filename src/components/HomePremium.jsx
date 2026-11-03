@@ -1,6 +1,7 @@
-import { Crown, Gem, ShieldCheck, Users } from 'lucide-react';
+import { Crown, Gem, MessageCircle, ShieldCheck, Users } from 'lucide-react';
 import { PRODUCTS, peso } from '../lib/products.js';
 
+const FB = 'https://www.facebook.com/share/1EMPotxs2u/';
 const PROMISE = [
   [ShieldCheck, 'Single-use codes', 'Each code redeems once, so your points stay safe.'],
   [Crown, 'VIP: 2x points', 'On eligible package codes, plus a monthly snack.'],
@@ -19,7 +20,8 @@ function Product({ p, i }) {
         <p className="eyebrow">YUÉLÍN</p>
         <h3 className="pl-name">{p.name}</h3>
         <p className="dim small">{p.desc}</p>
-        <div className="pl-price">{price ? <b className="gold-text">{price}</b> : <span className="dim">Price on request</span>}</div>
+        <div className="pl-price">{price ? <><b className="gold-text">{price}</b><span className="dim small"> / tub · 3 pcs</span></> : <span className="dim">Price on request</span>}</div>
+        <a className="btn gold sm" href={FB} target="_blank" rel="noopener noreferrer"><MessageCircle size={14} />Inquire</a>
         <details className="pl-more">
           <summary>More info</summary>
           <div className="sum" style={{ marginTop: 10 }}>
@@ -36,8 +38,8 @@ export default function HomePremium() {
     <>
       <section className="stack" style={{ gap: 14 }}>
         <div><p className="eyebrow">THE COLLECTION</p><h2>Six signature flavors</h2><p className="dim">One YUÉLÍN experience, six distinctive creations.</p></div>
-        <div className="grid2 stag">{PRODUCTS.map((p, i) => <Product key={p.id} p={p} i={i} />)}</div>
-        <p className="dim small center">Message us to inquire and place your order.</p>
+        <div className="pgrid stag">{PRODUCTS.map((p, i) => <Product key={p.id} p={p} i={i} />)}</div>
+        <p className="dim small center">Every flavor is ₱59 for 3 pcs per tub. Tap Inquire to order.</p>
       </section>
 
       <section className="stack" style={{ gap: 12 }}>
