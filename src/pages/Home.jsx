@@ -9,6 +9,7 @@ import { catIcon, groupRewards, nextGoal } from '../lib/rewardsCat.js';
 import { PageSkeleton } from '../components/Ui.jsx';
 import HomeExtras from '../components/HomeExtras.jsx';
 import BannerCarousel from '../components/BannerCarousel.jsx';
+import HomePremium from '../components/HomePremium.jsx';
 
 const join = [['1', 'Create your account', 'Sign up free with your email and a few details.'], ['2', 'Redeem a code', 'Every YUÉLÍN pack can carry a code worth points.'], ['3', 'Exchange a reward', 'Pick something from the collection.']];
 const why = [
@@ -115,6 +116,8 @@ export default function Home() {
           #YUÉLÍN #YuelinCollection #DiscoverYuelin #SweetMoments #FlavorCollection
         </p>
       </div>
+
+      <HomePremium />
 
       {session && rewards && <HomeExtras rewards={rewards} bal={bal} />}
 
