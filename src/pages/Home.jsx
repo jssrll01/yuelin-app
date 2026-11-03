@@ -91,14 +91,7 @@ export default function Home() {
         </div>
       </section>
 
-      {cats.length > 0 && (
-        <section className="stack">
-          <div className="sec-h"><h2>Shop the collection</h2><Link to="/exchange" className="small gold-text" style={{ fontWeight: 700 }}>See all</Link></div>
-          <div className="cats">
-            {cats.map((g) => { const I = catIcon(g.name); return (<Link key={g.name} to={'/exchange?c=' + encodeURIComponent(g.name)} className="cat"><I size={16} />{g.name} <small>from {pts(g.min)} pts</small></Link>); })}
-          </div>
-        </section>
-      )}
+      
 
       {session && rewards && <HomeExtras rewards={rewards} bal={bal} />}
 
