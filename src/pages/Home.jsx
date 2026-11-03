@@ -88,34 +88,7 @@ export default function Home() {
         </section>
       )}
 
-            <div className="card stack" style={{ marginBottom: 16, border: '1px solid rgba(212, 175, 55, 0.3)' }}>
-        <div className="row between">
-          <h3 style={{ margin: 0, fontSize: 16 }}>✨ Discover the World of YUÉLÍN ✨</h3>
-          <span className="tagline" style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#d4af37', padding: '4px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>event</span>
-        </div>
-        <p className="dim small" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, marginTop: 8 }}>
-          An indulgent little delight, crafted to make every bite feel special.{"\n\n"}
-          Introducing the YUÉLÍN Flavor Collection — six distinctive creations, each offering its own delightful character, flavor, and experience.{"\n\n"}
-          🍓 YUÉLÍN Fraise Dorée{"\n"}
-          A delicate strawberry-extract flavor with a sweet, fruity character.{"\n\n"}
-          🌰 YUÉLÍN Amande Dorée{"\n"}
-          A delightful almond-extract flavor for a distinctive nutty aroma.{"\n\n"}
-          🍵 YUÉLÍN Jade Élixir{"\n"}
-          A matcha-coated creation with an elegant, signature green tea taste.{"\n\n"}
-          🌹 YUÉLÍN Rosé Élixir{"\n"}
-          A strawberry-coated delight with a beautiful fruity finish.{"\n\n"}
-          🍫 YUÉLÍN Premium Noir Élixir{"\n"}
-          Chocolate-coated indulgence for those who love rich chocolate flavor.{"\n\n"}
-          🤍 YUÉLÍN Blanc Élixir{"\n"}
-          White chocolate-coated goodness with a smooth, creamy sweetness.{"\n\n"}
-          SIX SIGNATURE FLAVORS. ONE YUÉLÍN EXPERIENCE.{"\n\n"}
-          Whether you prefer fruity, nutty, matcha, or chocolate, there's a YUÉLÍN creation waiting for you.{"\n\n"}
-          Treat yourself. Share the delight. Discover your favorite.{"\n\n"}
-          Make every bite a little more extraordinary.{"\n\n"}
-          💌 Message us to inquire and place your order!{"\n\n"}
-          #YUÉLÍN #YuelinCollection #DiscoverYuelin #SweetMoments #FlavorCollection
-        </p>
-      </div>
+            
 
       <HomePremium />
 

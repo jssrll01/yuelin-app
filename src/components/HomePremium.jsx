@@ -35,16 +35,6 @@ export default function HomePremium() {
         </div>
       </section>
 
-      <section className="card stack">
-        <div><p className="eyebrow">HOW IT WORKS</p><h2>From the first bite to your reward</h2></div>
-        <div className="ladder">
-          {STEPS.map(([I, t, d]) => (
-            <div key={t}><I size={22} className="gold-text" style={{ margin: '0 auto 6px' }} /><b>{t}</b><span className="dim small">{d}</span></div>
-          ))}
-        </div>
-        <Link to="/guide" className="btn sm" style={{ alignSelf: 'flex-start' }}>Read the guide<ArrowRight size={14} /></Link>
-      </section>
-
       <section className="stack" style={{ gap: 12 }}>
         <div><p className="eyebrow">THE YUÉLÍN PROMISE</p><h2>Made to be rewarding</h2></div>
         <div className="grid3 stag">
