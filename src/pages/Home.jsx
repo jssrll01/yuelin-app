@@ -91,7 +91,22 @@ export default function Home() {
         </div>
       </section>
 
-      
+            <div className="card stack" style={{ marginBottom: 16, border: '1px solid rgba(212, 175, 55, 0.3)' }}>
+        <div className="row between">
+          <h3 style={{ margin: 0, fontSize: 16 }}>🍓 YUÉLÍN FLAVOR VOTE IS OPEN! 🍵</h3>
+          <span className="tagline" style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#d4af37', padding: '4px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 }}>event</span>
+        </div>
+        <p className="dim small" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, marginTop: 8 }}>
+          We're planning our next delicious flavor release, and we want YOU to decide!{"\n\n"}
+          Which flavor would you love to try next?{"\n\n"}
+          🍵 Matcha{"\n"}
+          🍓 Strawberry{"\n"}
+          🍫 Doubled Choco{"\n"}
+          🌰 Almond{"\n\n"}
+          Drop your vote below! Your choice could become our next YUÉLÍN favorite.{"\n\n"}
+          Let's create something delicious together! ♡
+        </p>
+      </div>
 
       {session && rewards && <HomeExtras rewards={rewards} bal={bal} />}
 
